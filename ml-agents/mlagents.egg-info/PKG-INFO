@@ -1,0 +1,45 @@
+Metadata-Version: 2.1
+Name: mlagents
+Version: 1.1.0.dev0
+Summary: Unity Machine Learning Agents
+Home-page: https://github.com/Unity-Technologies/ml-agents
+Author: Unity Technologies
+Author-email: ML-Agents@unity3d.com
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Programming Language :: Python :: 3.10
+Requires-Python: >=3.10.1,<=3.10.12
+Description-Content-Type: text/markdown
+
+# Unity ML-Agents Trainers
+
+The `mlagents` Python package is part of the
+[ML-Agents Toolkit](https://github.com/Unity-Technologies/ml-agents). `mlagents`
+provides a set of reinforcement and imitation learning algorithms designed to be
+used with Unity environments. The algorithms interface with the Python API
+provided by the `mlagents_envs` package. See [here](../docs/Python-LLAPI.md) for
+more information on `mlagents_envs`.
+
+The algorithms can be accessed using the: `mlagents-learn` access point. See
+[here](../docs/Training-ML-Agents.md) for more information on using this
+package.
+
+## Installation
+
+Install the `mlagents` package with:
+
+```sh
+python -m pip install mlagents==1.0.0
+```
+
+## Usage & More Information
+
+For more information on the ML-Agents Toolkit and how to instrument a Unity
+scene with the ML-Agents SDK, check out the main
+[ML-Agents Toolkit documentation](../docs/Readme.md).
+
+## Limitations
+
+- Resuming self-play from a checkpoint resets the reported ELO to the default
+  value.

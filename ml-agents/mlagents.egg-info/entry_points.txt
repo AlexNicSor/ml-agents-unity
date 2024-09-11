@@ -1,0 +1,11 @@
+[console_scripts]
+mlagents-learn = mlagents.trainers.learn:main
+mlagents-load-from-hf = mlagents.utils.load_from_hf:main
+mlagents-push-to-hf = mlagents.utils.push_to_hf:main
+mlagents-run-experiment = mlagents.trainers.run_experiment:main
+
+[mlagents.stats_writer]
+default = mlagents.plugins.stats_writer:get_default_stats_writers
+
+[mlagents.trainer_type]
+default = mlagents.plugins.trainer_type:get_default_trainer_types
