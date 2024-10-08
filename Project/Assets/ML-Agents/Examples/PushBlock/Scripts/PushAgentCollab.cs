@@ -1,4 +1,3 @@
-//Put this script on your blue cube.
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
@@ -35,21 +34,27 @@ public class PushAgentCollab : Agent
         {
             case 1:
                 dirToGo = transform.forward * 1f;
+                Debug.Log("Moving Forward");
                 break;
             case 2:
                 dirToGo = transform.forward * -1f;
+                Debug.Log("Moving Backward");
                 break;
             case 3:
                 rotateDir = transform.up * 1f;
+                Debug.Log("Rotating Right");
                 break;
             case 4:
                 rotateDir = transform.up * -1f;
+                Debug.Log("Rotating Left");
                 break;
             case 5:
                 dirToGo = transform.right * -0.75f;
+                Debug.Log("Strafing Left");
                 break;
             case 6:
                 dirToGo = transform.right * 0.75f;
+                Debug.Log("Strafing Right");
                 break;
         }
         transform.Rotate(rotateDir, Time.fixedDeltaTime * 200f);

@@ -149,6 +149,11 @@ public class PushBlockEnvController : MonoBehaviour
 
         // Reset block angularVelocity back to zero.
         block.Rb.angularVelocity = Vector3.zero;
+        // Make the block easier to move
+
+        block.Rb.mass = 0.5f; // Adjust the mass (default is usually 1)
+        block.Rb.drag = 0.1f; // Reduce drag (default is 0)
+        block.Rb.angularDrag = 0.1f; // Reduce angular drag (default is 0.05)
     }
 
     /// <summary>

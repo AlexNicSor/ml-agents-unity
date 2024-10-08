@@ -3,7 +3,6 @@ using UnityEngine.Events;
 
 public class GoalDetectTrigger : MonoBehaviour
 {
-
     [Header("Trigger Collider Tag To Detect")]
     public string tagToDetect = "goal"; //collider tag to detect
 
@@ -11,6 +10,7 @@ public class GoalDetectTrigger : MonoBehaviour
     public float GoalValue = 1;
 
     private Collider m_col;
+
     [System.Serializable]
     public class TriggerEvent : UnityEvent<Collider, float>
     {
@@ -25,6 +25,7 @@ public class GoalDetectTrigger : MonoBehaviour
     {
         if (col.CompareTag(tagToDetect))
         {
+            Debug.Log("Entered Goal Zone");
             onTriggerEnterEvent.Invoke(m_col, GoalValue);
         }
     }
@@ -33,6 +34,7 @@ public class GoalDetectTrigger : MonoBehaviour
     {
         if (col.CompareTag(tagToDetect))
         {
+            Debug.Log("Staying in Goal Zone");
             onTriggerStayEvent.Invoke(m_col, GoalValue);
         }
     }
@@ -41,9 +43,11 @@ public class GoalDetectTrigger : MonoBehaviour
     {
         if (col.CompareTag(tagToDetect))
         {
+            Debug.Log("Exited Goal Zone");
             onTriggerExitEvent.Invoke(m_col, GoalValue);
         }
     }
+
     // Start is called before the first frame update
     void Awake()
     {
