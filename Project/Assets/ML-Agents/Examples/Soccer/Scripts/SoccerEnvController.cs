@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Unity.MLAgents;
 using UnityEngine;
-
+using UnityEngine.UI;
 public class SoccerEnvController : MonoBehaviour
 {
     [System.Serializable]
@@ -20,7 +20,7 @@ public class SoccerEnvController : MonoBehaviour
     /// <summary>
     /// Max Academy steps before this platform resets
     /// </summary>
-    /// <returns></returns>
+    /// <returns></returns>`
     [Tooltip("Max Environment Steps")] public int MaxEnvironmentSteps = 25000;
 
     /// <summary>
@@ -47,8 +47,15 @@ public class SoccerEnvController : MonoBehaviour
 
     private int m_ResetTimer;
 
+    public Text scoreText;
+
+    private int blueScore;
+    private int purpleScore;
+
     void Start()
     {
+        // Update the score display
+        UpdateScoreText();
 
         m_SoccerSettings = FindObjectOfType<SoccerSettings>();
         // Initialize TeamManager
@@ -102,17 +109,27 @@ public class SoccerEnvController : MonoBehaviour
         {
             m_BlueAgentGroup.AddGroupReward(1 - (float)m_ResetTimer / MaxEnvironmentSteps);
             m_PurpleAgentGroup.AddGroupReward(-1);
+            blueScore++;
+            Debug.Log("Blue scored! Blue score: " + blueScore + ", Purple score: " + purpleScore);
         }
         else
         {
             m_PurpleAgentGroup.AddGroupReward(1 - (float)m_ResetTimer / MaxEnvironmentSteps);
             m_BlueAgentGroup.AddGroupReward(-1);
+            purpleScore++;
+            Debug.Log("Purple scored! Blue score: " + blueScore + ", Purple score: " + purpleScore);
         }
+        UpdateScoreText();
         m_PurpleAgentGroup.EndGroupEpisode();
         m_BlueAgentGroup.EndGroupEpisode();
         ResetScene();
 
     }
+
+    void UpdateScoreText()
+        {
+            scoreText.text = blueScore + ":" + purpleScore;
+        }
 
 
     public void ResetScene()
