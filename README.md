@@ -60,7 +60,7 @@ in real-time simulations and hypertune the agents through thorough testing
 # Installation Guide
 1. **Clone The Repository**:
 ```bash
-git clone --branch fix-numpy-release-21-branch https://github.com/AlexNicSor/ml-agents-unity.git
+git clone https://github.com/AlexNicSor/ml-agents-unity.git
 cd ml-agents-unity
 ```
 2. **Set Up Virtual Environment**
