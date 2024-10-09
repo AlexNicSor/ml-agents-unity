@@ -1,4 +1,3 @@
-**# Project Plan: Ai and Machine Learning with Unity Ml-Agents
 ## Overview
 
 This is an **AI and Machine Learning with Unity ML-Agents** project!
