@@ -68,11 +68,22 @@ cd ml-agents-unity
 2. **Set Up Virtual Environment**
 ```bash
 python -m venv venv
-source venv\\Scripts\\activate
+MAC/Linux: source venv/bin/activate
+Windows: venv\Scripts\activate
 ```
-3. **Install Python Dependencies**:
+3. **Install ML-Agents**:
 ```bash
-pip install -r requirements.txt
+pip install --upgrade pip
+pip install -e ./ml-angents-envs
+pip install -e ./ml-angents
+```
+3. **Test instalation**:
+```bash
+ml-agents-learn --help
+```
+3. **Additional dependencies**:
+```bash
+pip install torch torchvision torchaudio
 ```
 4. **Install Unity**: Download and install [Unity](unity.com)
 
