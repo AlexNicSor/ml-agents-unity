@@ -1,3 +1,5 @@
+**Note:** This repository is based on [a ml-agents branch].(https://github.com/DennisSoemers/ml-agents/tree/fix-numpy-release-21-branch)
+
 ## Overview
 
 This is an **AI and Machine Learning with Unity ML-Agents** project!
