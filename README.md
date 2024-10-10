@@ -1,4 +1,4 @@
-**Note:** This repository is based on [a ml-agents branch].(https://github.com/DennisSoemers/ml-agents/tree/fix-numpy-release-21-branch)
+**Note:** This repository is based on [a ml-agents branch](https://github.com/DennisSoemers/ml-agents/tree/fix-numpy-release-21-branch).
 
 ## Overview
 
