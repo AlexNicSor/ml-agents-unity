@@ -3,6 +3,8 @@ using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 
+//decouple the agent from the ball
+
 public enum Team
 {
     Blue = 0,
@@ -47,6 +49,8 @@ public class AgentSoccer : Agent
     public float rotSign;
 
     EnvironmentParameters m_ResetParams;
+
+    public GameObject ball; // Reference to the ball GameObject
 
     public override void Initialize()
     {
@@ -104,42 +108,56 @@ public class AgentSoccer : Agent
 
         var forwardAxis = act[0];
         var rightAxis = act[1];
-        var rotateAxis = act[2];
 
-        switch (forwardAxis)
+        // Check if the ball is visible
+        bool ballVisible = IsBallVisible();
+
+        if (!ballVisible)
         {
-            case 1:
-                dirToGo = transform.forward * m_ForwardSpeed;
-                m_KickPower = 1f;
-                break;
-            case 2:
-                dirToGo = transform.forward * -m_ForwardSpeed;
-                break;
+            // If the ball is not visible, quickly scan left and right
+            float scanSpeed = 5f; // Adjust the speed of scanning
+            rotateDir = Vector3.up * Mathf.Sin(Time.time * scanSpeed); // Oscillate between left and right
+        }
+        else
+        {
+            // Allow forward/backward movement based on action input when the ball is visible
+            switch (forwardAxis)
+            {
+                case 1:
+                    dirToGo = transform.forward * m_ForwardSpeed; // Move forward
+                    m_KickPower = 1f;
+                    break;
+                case 2:
+                    dirToGo = transform.forward * -m_ForwardSpeed; // Move backward
+                    break;
+            }
         }
 
+        // Lateral movement logic
         switch (rightAxis)
         {
             case 1:
-                dirToGo = transform.right * m_LateralSpeed;
+                dirToGo += transform.right * m_LateralSpeed; // Move right
                 break;
             case 2:
-                dirToGo = transform.right * -m_LateralSpeed;
+                dirToGo += transform.right * -m_LateralSpeed; // Move left
                 break;
         }
 
-        switch (rotateAxis)
-        {
-            case 1:
-                rotateDir = transform.up * -1f;
-                break;
-            case 2:
-                rotateDir = transform.up * 1f;
-                break;
-        }
-
+        // Apply rotation and movement
         transform.Rotate(rotateDir, Time.deltaTime * 100f);
-        agentRb.AddForce(dirToGo * m_SoccerSettings.agentRunSpeed,
-            ForceMode.VelocityChange);
+        agentRb.AddForce(dirToGo * m_SoccerSettings.agentRunSpeed, ForceMode.VelocityChange);
+    }
+
+    // New method to check if the ball is visible
+    private bool IsBallVisible()
+    {
+        if (ball != null)
+        {
+            float distance = Vector3.Distance(transform.position, ball.transform.position);
+            return distance < 10f; // Adjust the distance threshold as needed
+        }
+        return false;
     }
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
