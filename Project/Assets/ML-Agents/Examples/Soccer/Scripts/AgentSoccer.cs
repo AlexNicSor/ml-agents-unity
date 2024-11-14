@@ -15,6 +15,7 @@ public class AgentSoccer : Agent
     private float m_Existential;
     private float m_LateralSpeed;
     private float m_ForwardSpeed;
+
     public enum Position
     {
         Goalie,
@@ -54,87 +55,183 @@ public class AgentSoccer : Agent
 
     private void AdaptRoleBasedOnBallPosition()
     {
-        // Get the current field zone based on the ball's position
         FieldZone ballZone = envController.GetBallZone();
-
-        // Debugging ball position and agent's current role
         Debug.Log($"{team} - {position} | Ball is in {ballZone} zone.");
 
-        // Check if the agent is on the correct team and position
         if (team == Team.Blue)
         {
-            // If the ball is in the purple goal zone, Blue agent should switch to Striker
-            if (ballZone == FieldZone.PurpleGoal)
+            if (ballZone == FieldZone.PurpleGoal || ballZone == FieldZone.Middle)
             {
-                position = Position.Striker;  // Switch to generic role
+                position = Position.Striker;
                 isActingAsGoalie = false;
                 Debug.Log("Blue agent switched to Striker, ball is in opponent's goal zone.");
             }
-            // If the ball is in the blue goal zone, Blue agent should remain as Goalie
             else if (ballZone == FieldZone.BlueGoal)
             {
-                position = Position.Goalie;  // Switch to goalie role
+                position = Position.Goalie;
                 isActingAsGoalie = true;
                 Debug.Log("Blue agent switched to Goalie, ball is in their goal zone.");
             }
         }
         else if (team == Team.Purple)
         {
-            // If the ball is in the blue goal zone, Purple agent should switch to Striker
-            if (ballZone == FieldZone.BlueGoal)
+            if (ballZone == FieldZone.BlueGoal || ballZone == FieldZone.Middle)
             {
-                position = Position.Striker;  // Switch to generic role
+                position = Position.Striker;
                 isActingAsGoalie = false;
                 Debug.Log("Purple agent switched to Striker, ball is in opponent's goal zone.");
             }
-            // If the ball is in the purple goal zone, Purple agent should remain as Goalie
             else if (ballZone == FieldZone.PurpleGoal)
             {
-                position = Position.Goalie;  // Switch to goalie role
+                position = Position.Goalie;
                 isActingAsGoalie = true;
                 Debug.Log("Purple agent switched to Goalie, ball is in their goal zone.");
             }
         }
-
-        // Log the final role after evaluation
         Debug.Log($"Final position for {team}: {position} (Goalie={isActingAsGoalie})");
     }
 
-    // Method to calculate rewards
+    // private void CalculateRewards()
+    // {
+    //     Vector3 ballPosition = envController.ball.transform.position;
+    //     float distanceToBall = Vector3.Distance(transform.position, ballPosition);
+    //     FieldZone ballZone = envController.GetBallZone();
+
+    //     // Existential reward for surviving steps
+    //     AddReward(m_Existential);
+
+    //     // For goalkeepers
+    //     if (isActingAsGoalie)
+    //     {
+    //         if ((team == Team.Blue && ballZone != FieldZone.BlueGoal) || (team == Team.Purple && ballZone != FieldZone.PurpleGoal))
+    //         {
+    //             AddReward(0.05f); // Staying on the defensive side
+    //         }
+
+    //         if ((team == Team.Blue && ballPosition.x < envController.purpleGoalLineX) || (team == Team.Purple && ballPosition.x > envController.blueGoalLineX))
+    //         {
+    //             AddReward(50f); // Successfully sending the ball to the opponent's side
+    //             Debug.Log($"{team} goalie sent the ball to the opponent's side.");
+    //         }
+
+    //         // Reward for deflecting or being close to the ball
+    //         if (distanceToBall < 1.0f)
+    //         {
+    //             AddReward(5f);
+    //             Debug.Log($"{team} goalie defended the ball!");
+    //         }
+
+    //         if (distanceToBall > 1.5f)
+    //         {
+    //             AddReward(-50f); // Penalty for being too far from the ball
+    //         }
+    //     }
+
+    //     // For strikers
+    //     if (!isActingAsGoalie)
+    //     {
+    //         if ((team == Team.Blue && ballPosition.x > envController.purpleGoalLineX) || (team == Team.Purple && ballPosition.x < envController.blueGoalLineX))
+    //         {
+    //             AddReward(50f); // Ball is moving toward the enemy goal
+    //             Debug.Log($"{team} striker pushed the ball towards the enemy goal.");
+    //         }
+
+    //         // Proximity reward for moving close to the ball
+    //         float rewardForDistance = Mathf.Clamp(10f / distanceToBall, 0, 10f);
+    //         AddReward(rewardForDistance);
+    //         Debug.Log($"{team} striker rewarded for being close to the ball.");
+
+    //         if (distanceToBall > 0.1f)
+    //         {
+    //             AddReward(-50f); // Penalty for being too far from the ball
+    //         }
+    //     }
+
+    //     // Penalty for unproductive movement
+    //     if (distanceToBall > 1.5f && Vector3.Dot(agentRb.velocity, transform.forward) < 0.5f)
+    //     {
+    //         AddReward(-0.1f);
+    //         Debug.Log($"{team} penalized for unproductive movement.");
+    //     }
+
+    //     // Scoring reward and own goal penalty
+    //     if (envController.CheckGoal(team))
+    //     {
+    //         AddReward(200f); // Reward for scoring a goal
+    //         Debug.Log($"{team} scored a goal!");
+    //     }
+    //     if (envController.CheckOwnGoal(team))
+    //     {
+    //         AddReward(-100f); // Penalty for own-goal
+    //         Debug.Log($"{team} made an own goal!");
+    //     }
+    // }
+
+
     private void CalculateRewards()
     {
         Vector3 ballPosition = envController.ball.transform.position;
         float distanceToBall = Vector3.Distance(transform.position, ballPosition);
         FieldZone ballZone = envController.GetBallZone();
 
-        // For goalkeepers
+        // Existential reward: small reward for each step to encourage agents to stay active.
+        AddReward(0.001f);
+
+        // Reward for positioning relative to dynamically assigned roles
         if (isActingAsGoalie)
         {
-            // Reward for staying on the goalie side of the field (defending)
-            if ((team == Team.Blue && ballZone != FieldZone.BlueGoal) || (team == Team.Purple && ballZone != FieldZone.PurpleGoal))
+            // Goalies are rewarded for staying near their goal when the ball is close.
+            if ((team == Team.Blue && ballZone == FieldZone.BlueGoal) ||
+                (team == Team.Purple && ballZone == FieldZone.PurpleGoal))
             {
-                AddReward(0.1f); // Staying on the defensive side
+                AddReward(0.3f);  // Reward for maintaining defensive position.
+            }
+            else
+            {
+                AddReward(-0.1f);  // Penalty if out of position.
             }
 
-            // Reward for clearing the ball toward the opponent's goal
-            if ((team == Team.Blue && ballPosition.x < envController.purpleGoalLineX) || (team == Team.Purple && ballPosition.x > envController.blueGoalLineX))
+            // Reward for approaching the ball within a reasonable range.
+            if (distanceToBall < 1.5f)
             {
-                AddReward(0.5f); // Successfully sending the ball to the opponent's side
-                Debug.Log($"{team} goalie sent the ball to the opponent's side.");
+                AddReward(0.5f);  // Defending closer to the ball as goalie.
+            }
+            else if (distanceToBall > 3.0f)
+            {
+                AddReward(-0.2f);  // Penalty if too far from the ball as goalie.
+            }
+        }
+        else
+        {
+            // Strikers are rewarded for advancing the ball toward the opponent’s goal.
+            if ((team == Team.Blue && ballPosition.x > envController.purpleGoalLineX) ||
+                (team == Team.Purple && ballPosition.x < envController.blueGoalLineX))
+            {
+                AddReward(0.5f);  // Ball advancing toward opponent’s goal.
+            }
+
+            // Reward for staying close to the ball and taking scoring opportunities.
+            if (distanceToBall < 1.5f)
+            {
+                AddReward(0.2f);  // Reward for staying close to the ball.
+            }
+            else
+            {
+                AddReward(-0.05f);  // Mild penalty for drifting too far from the ball.
             }
         }
 
-        // For strikers
-        if (!isActingAsGoalie)
+        // Scoring Rewards and Own Goal Penalties
+        if (envController.CheckGoal(team))
         {
-            // Reward for pushing the ball towards the enemy goal
-            if ((team == Team.Blue && ballPosition.x > envController.purpleGoalLineX) || (team == Team.Purple && ballPosition.x < envController.blueGoalLineX))
-            {
-                AddReward(0.5f); // Ball is moving toward the enemy goal
-                Debug.Log($"{team} striker pushed the ball towards the enemy goal.");
-            }
+            AddReward(1f); // High reward for scoring a goal.
+        }
+        if (envController.CheckOwnGoal(team))
+        {
+            AddReward(-1f); // Large penalty for an own goal.
         }
     }
+
 
     public void MoveAgent(ActionSegment<int> act)
     {
@@ -160,23 +257,16 @@ public class AgentSoccer : Agent
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
-        // Adapt the agent's role based on the ball position
         AdaptRoleBasedOnBallPosition();
-
-        // Debugging the agent's position and role before applying rewards
         Debug.Log($"{team} - {position} | Current Agent Position: {transform.position} | Ball Position: {envController.ball.transform.position}");
 
-        // Ensure reward values are finite before applying
         if (float.IsInfinity(m_Existential) || float.IsNaN(m_Existential))
         {
             Debug.LogWarning("Invalid reward value detected, skipping reward update.");
             return; // Skip adding rewards if the value is invalid
         }
 
-        // Calculate and apply rewards based on the agent's role
         CalculateRewards();
-
-        // Move the agent based on its decision
         MoveAgent(actionBuffers.DiscreteActions);
     }
 
@@ -184,9 +274,9 @@ public class AgentSoccer : Agent
     {
         Debug.Log($"{team} - {position} at position: {transform.position}");
     }
+
     public override void Heuristic(in ActionBuffers actionsOut)
     {
-        // Handle heuristic controls
         var discreteActionsOut = actionsOut.DiscreteActions;
         if (Input.GetKey(KeyCode.W)) discreteActionsOut[0] = 1;
         if (Input.GetKey(KeyCode.S)) discreteActionsOut[0] = 2;
@@ -198,14 +288,13 @@ public class AgentSoccer : Agent
 
     public override void OnEpisodeBegin()
     {
-        // Ensure MaxStep is greater than zero to avoid infinity
         if (MaxStep > 0)
         {
-            m_Existential = 1f / MaxStep;
+            m_Existential = 0.01f; // Small existential reward per step
         }
         else
         {
-            m_Existential = 0f; // Default to 0 if MaxStep is zero or invalid
+            m_Existential = 0f;
         }
     }
 }

@@ -26,9 +26,9 @@ public class SoccerEnvController : MonoBehaviour
     [Tooltip("Max Environment Steps")] public int MaxEnvironmentSteps = 25000;
     public GameObject ball;
     public float purpleGoalLineX = 6f;  // Purple goal line
-    public float blueGoalLineX = -6f; // Blue goal line
-
-
+    public float blueGoalLineX = -6f;   // Blue goal line
+    public float purpleGoalBoundaryX = 15f;  // Actual purple goal boundary
+    public float blueGoalBoundaryX = -15f;   // Actual blue goal boundary
     private int m_ResetTimer;
     private SoccerSettings m_SoccerSettings;
     private SimpleMultiAgentGroup m_BlueAgentGroup;
@@ -66,10 +66,17 @@ public class SoccerEnvController : MonoBehaviour
         ResetScene();
     }
 
-
     void FixedUpdate()
     {
         m_ResetTimer += 1;
+
+        // Check if any team scored a goal
+        if (CheckGoal(Team.Blue) || CheckGoal(Team.Purple))
+        {
+            return;
+        }
+
+        // End the episode if max steps are reached
         if (m_ResetTimer >= MaxEnvironmentSteps && MaxEnvironmentSteps > 0)
         {
             m_BlueAgentGroup.GroupEpisodeInterrupted();
@@ -100,6 +107,37 @@ public class SoccerEnvController : MonoBehaviour
         }
     }
 
+    // Checks if a goal has been scored by the specified team
+    public bool CheckGoal(Team scoredTeam)
+    {
+        if (scoredTeam == Team.Blue && ball.transform.position.x > purpleGoalBoundaryX)
+        {
+            GoalTouched(Team.Blue);
+            return true;
+        }
+        else if (scoredTeam == Team.Purple && ball.transform.position.x < blueGoalBoundaryX)
+        {
+            GoalTouched(Team.Purple);
+            return true;
+        }
+        return false;
+    }
+
+    // Checks if an own goal has been scored by the specified team
+    public bool CheckOwnGoal(Team team)
+    {
+        if (team == Team.Blue && ball.transform.position.x < blueGoalBoundaryX)
+        {
+            GoalTouched(Team.Purple);  // Blue team scores an own goal for Purple
+            return true;
+        }
+        else if (team == Team.Purple && ball.transform.position.x > purpleGoalBoundaryX)
+        {
+            GoalTouched(Team.Blue);  // Purple team scores an own goal for Blue
+            return true;
+        }
+        return false;
+    }
 
     public void ResetScene()
     {
