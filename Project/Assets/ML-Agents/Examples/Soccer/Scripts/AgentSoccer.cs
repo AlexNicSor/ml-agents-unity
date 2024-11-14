@@ -2,6 +2,9 @@ using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
+using System.Collections.Generic;
+using Unity.MLAgents.Sensors;
+
 
 public enum Team
 {
@@ -142,6 +145,8 @@ public class AgentSoccer : Agent
             ForceMode.VelocityChange);
     }
 
+    
+// TODO: Update OnActionReceived to provide rewards for the new proximity sensor and respective actions.
     public override void OnActionReceived(ActionBuffers actionBuffers)
 
     {
@@ -212,6 +217,47 @@ public class AgentSoccer : Agent
     public override void OnEpisodeBegin()
     {
         m_BallTouch = m_ResetParams.GetWithDefault("ball_touch", 0);
+    }
+
+
+    private List<GameObject> nearbyObjects = new List<GameObject>();
+
+    void onTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("ball") || other.gameObject.CompareTag("blueAgent") || other.gameObject.CompareTag("purpleAgent"))
+        {
+            nearbyObjects.Add(other.gameObject);
+        }
+    }
+
+    void onTriggerExit(Collider other) 
+    {
+        nearbyObjects.Remove(other.gameObject);
+    }
+
+
+    public override void CollectObservations(VectorSensor sensor)
+    {
+        if (sensor == null)
+        {
+            Debug.LogError("VectorSensor is null in CollectObservations.");
+            return;
+        }
+        if (nearbyObjects.Count == 0 || nearbyObjects == null)
+        {
+            sensor.AddObservation(0);
+            sensor.AddObservation(Vector3.zero);
+        }
+        else 
+        {
+            foreach (GameObject nearbyObject in nearbyObjects)
+            {
+                Vector3 relativePosition = transform.InverseTransformPoint(nearbyObject.transform.position);
+
+                sensor.AddObservation(nearbyObject.CompareTag("ball") ? 1 : nearbyObject.CompareTag("blueAgent") ? 2 : 3);
+                sensor.AddObservation(relativePosition);
+        }
+        }
     }
 
 }
