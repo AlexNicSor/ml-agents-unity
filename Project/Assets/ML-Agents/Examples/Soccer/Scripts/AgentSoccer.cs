@@ -52,6 +52,12 @@ public class AgentSoccer : Agent
 
     public GameObject ball; // Reference to the ball GameObject
 
+    private float actionTimer = 0f;
+    private float scanTimer = 0f;
+    private const float ACTION_INTERVAL = 3f;
+    private const float SCAN_DURATION = 0.5f;
+    private bool isScanning = false;
+
     public override void Initialize()
     {
         SoccerEnvController envController = GetComponentInParent<SoccerEnvController>();
@@ -101,6 +107,7 @@ public class AgentSoccer : Agent
 
     public void MoveAgent(ActionSegment<int> act)
     {
+        actionTimer += Time.deltaTime;
         var dirToGo = Vector3.zero;
         var rotateDir = Vector3.zero;
 
@@ -109,26 +116,44 @@ public class AgentSoccer : Agent
         var forwardAxis = act[0];
         var rightAxis = act[1];
 
-        // Check if the ball is visible
+
+        if (actionTimer >= ACTION_INTERVAL)
+        {
+            isScanning = true;
+            scanTimer = 0f;
+            actionTimer = 0f;
+        }
+
+       
+        if (isScanning)
+        {
+            scanTimer += Time.deltaTime;
+            if (scanTimer >= SCAN_DURATION)
+            {
+                isScanning = false;
+            }
+        }
+
+        
         bool ballVisible = IsBallVisible();
 
-        if (!ballVisible)
+       
+        if (isScanning || !ballVisible)
         {
-            // If the ball is not visible, quickly scan left and right
-            float scanSpeed = 5f; // Adjust the speed of scanning
-            rotateDir = Vector3.up * Mathf.Sin(Time.time * scanSpeed); // Oscillate between left and right
+            float scanSpeed = 10f;
+            rotateDir = Vector3.up * Mathf.Sin(Time.time * scanSpeed);
         }
         else
         {
-            // Allow forward/backward movement based on action input when the ball is visible
+          
             switch (forwardAxis)
             {
                 case 1:
-                    dirToGo = transform.forward * m_ForwardSpeed; // Move forward
+                    dirToGo = transform.forward * m_ForwardSpeed;
                     m_KickPower = 1f;
                     break;
                 case 2:
-                    dirToGo = transform.forward * -m_ForwardSpeed; // Move backward
+                    dirToGo = transform.forward * -m_ForwardSpeed;
                     break;
             }
         }
@@ -155,7 +180,7 @@ public class AgentSoccer : Agent
         if (ball != null)
         {
             float distance = Vector3.Distance(transform.position, ball.transform.position);
-            return distance < 10f; // Adjust the distance threshold as needed
+            return distance < 32f; // Adjust the distance threshold as needed
         }
         return false;
     }
