@@ -2,7 +2,7 @@ using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
-
+using Soccer;
 public enum Team
 {
     Blue = 0,
@@ -18,16 +18,15 @@ public class AgentSoccer : Agent
     // * wall
     // * own teammate
     // * opposing player
-
     public enum Position
     {
         Striker,
         Goalie,
         Generic
     }
+    public Team team;
 
     [HideInInspector]
-    public Team team;
     float m_KickPower;
     // The coefficient for the reward for colliding with a ball. Set using curriculum.
     float m_BallTouch;
@@ -37,7 +36,7 @@ public class AgentSoccer : Agent
     float m_Existential;
     float m_LateralSpeed;
     float m_ForwardSpeed;
-
+    private SoccerEnvController envController;
 
     [HideInInspector]
     public Rigidbody agentRb;
@@ -50,7 +49,8 @@ public class AgentSoccer : Agent
 
     public override void Initialize()
     {
-        SoccerEnvController envController = GetComponentInParent<SoccerEnvController>();
+        envController = GetComponentInParent<SoccerEnvController>();
+
         if (envController != null)
         {
             m_Existential = 1f / envController.MaxEnvironmentSteps;
@@ -85,7 +85,7 @@ public class AgentSoccer : Agent
         }
         else
         {
-            m_LateralSpeed = 0.3f;
+            m_LateralSpeed = 0.5f;
             m_ForwardSpeed = 1.0f;
         }
         m_SoccerSettings = FindObjectOfType<SoccerSettings>();
@@ -94,6 +94,206 @@ public class AgentSoccer : Agent
 
         m_ResetParams = Academy.Instance.EnvironmentParameters;
     }
+
+    private void AdaptRoleBasedOnBallPosition()
+    {
+        FieldZone ballZone = envController.GetBallZone();
+        Debug.Log($"{team} - {position} | Ball is in {ballZone} zone.");
+
+        if (team == Team.Blue)
+        {
+            if (ballZone == FieldZone.BlueGoal)
+            {
+                position = Position.Goalie;
+            }
+            else
+            {
+                position = Position.Striker;
+            }
+        }
+        else
+        {
+            if (ballZone == FieldZone.PurpleGoal)
+            {
+                position = Position.Goalie;
+            }
+            else
+            {
+                position = Position.Striker;
+            }
+        }
+    }
+
+
+
+
+    private void AdaptRoleBasedOnBallPositionAndTeammates()
+    {//print agents list
+        foreach (var player in envController.AgentsList)
+        {
+            if (player == null) continue;
+            Debug.Log($"Agent: {player.Agent.name} | Team: {player.Agent.team} | Position: {player.Agent.position}");
+        }
+        if (envController == null)
+        {
+            Debug.LogError("envController is null!");
+            return;
+        }
+
+        FieldZone ballZone = envController.GetBallZone();
+
+        // Null check for ball
+        if (envController.ball == null)
+        {
+            Debug.LogError("Ball object is null!");
+            return;
+        }
+
+        float closestDistanceToBall = Mathf.Infinity;
+        AgentSoccer closeAgentBlue = null;
+        AgentSoccer secondAgentBlue = null;
+        AgentSoccer closeAgentPurple = null;
+        AgentSoccer secondAgentPurple = null;
+
+
+        // Null check for AgentsList
+        if (envController.AgentsList == null || envController.AgentsList.Count == 0)
+        {
+            Debug.LogError("AgentsList is empty or null!");
+            return;
+        }
+
+        // Find the closest agent to the ball for each team
+        foreach (var player in envController.AgentsList)
+        {
+            if (player == null) continue;
+            if (player.Agent.team == Team.Blue)
+            {
+                float distance = Vector3.Distance(player.Agent.transform.position, envController.ball.transform.position);
+                if (distance < closestDistanceToBall)
+                {
+                    secondAgentBlue = closeAgentBlue;
+                    closeAgentBlue = player.Agent;
+                    closestDistanceToBall = distance;
+                }
+            }
+            else
+            {
+                float distance = Vector3.Distance(player.Agent.transform.position, envController.ball.transform.position);
+                if (distance < closestDistanceToBall)
+                {
+                    secondAgentPurple = closeAgentPurple;
+                    closeAgentPurple = player.Agent;
+                    closestDistanceToBall = distance;
+                }
+            }
+        }
+
+        // Adapt the role based on the ball's position and the closest agent to the ball
+        // if ball close to own goal, second agent is goalie, closest agent is generic
+        // if ball close to opposing goal, second agent is striker, closest agent is generic
+        // if ball in middle, closest agent is striker, second agent is goalie
+        if (team == Team.Blue)
+        {
+            if (ballZone == FieldZone.BlueGoal)
+            {
+                if (closeAgentBlue == this)
+                {
+                    position = Position.Goalie;
+                }
+                else if (secondAgentBlue == this)
+                {
+                    position = Position.Striker;
+                }
+                else
+                {
+                    position = Position.Generic;
+                }
+            }
+            else if (ballZone == FieldZone.PurpleGoal)
+            {
+                if (closeAgentPurple == this)
+                {
+                    position = Position.Striker;
+                }
+                else if (secondAgentPurple == this)
+                {
+                    position = Position.Goalie;
+                }
+                else
+                {
+                    position = Position.Generic;
+                }
+            }
+            else
+            {
+                if (closeAgentBlue == this)
+                {
+                    position = Position.Striker;
+                }
+                else if (secondAgentBlue == this)
+                {
+                    position = Position.Goalie;
+                }
+                else
+                {
+                    position = Position.Generic;
+                }
+            }
+        }
+        else
+        {
+            if (ballZone == FieldZone.PurpleGoal)
+            {
+                if (closeAgentPurple == this)
+                {
+                    position = Position.Goalie;
+                }
+                else if (secondAgentPurple == this)
+                {
+                    position = Position.Striker;
+                }
+                else
+                {
+                    position = Position.Generic;
+                }
+            }
+            else if (ballZone == FieldZone.BlueGoal)
+            {
+                if (closeAgentBlue == this)
+                {
+                    position = Position.Striker;
+                }
+                else if (secondAgentBlue == this)
+                {
+                    position = Position.Goalie;
+                }
+                else
+                {
+                    position = Position.Generic;
+                }
+            }
+            else
+            {
+                if (closeAgentPurple == this)
+                {
+                    position = Position.Striker;
+                }
+                else if (secondAgentPurple == this)
+                {
+                    position = Position.Goalie;
+                }
+                else
+                {
+                    position = Position.Generic;
+                }
+            }
+        }
+
+
+
+    }
+
 
     public void MoveAgent(ActionSegment<int> act)
     {
@@ -148,14 +348,57 @@ public class AgentSoccer : Agent
 
         if (position == Position.Goalie)
         {
+            m_LateralSpeed = 1.0f;
+            m_ForwardSpeed = 1.0f;
             // Existential bonus for Goalies.
             AddReward(m_Existential);
+            //print m_Existential
+            Debug.Log($"Existential: {m_Existential}");
+
+            if (team == Team.Blue)
+            {
+                if (envController.GetBallZone() == FieldZone.BlueGoal)
+                {
+                    AddReward(-0.1f);
+                }
+            }
+            else
+            {
+                if (envController.GetBallZone() == FieldZone.PurpleGoal)
+                {
+                    AddReward(-0.1f);
+                }
+            }
         }
         else if (position == Position.Striker)
         {
+            m_LateralSpeed = 0.3f;
+            m_ForwardSpeed = 1.3f;
             // Existential penalty for Strikers
             AddReward(-m_Existential);
+            Debug.Log($"Existential: {m_Existential}");
+            if (team == Team.Blue)
+            {
+                if (envController.GetBallZone() == FieldZone.PurpleGoal)
+                {
+                    AddReward(0.1f);
+                }
+            }
+            else
+            {
+                if (envController.GetBallZone() == FieldZone.BlueGoal)
+                {
+                    AddReward(0.1f);
+                }
+            }
         }
+        else
+        {
+            m_LateralSpeed = 0.5f;
+            m_ForwardSpeed = 1.0f;
+        }
+        //AdaptRoleBasedOnBallPosition();
+        AdaptRoleBasedOnBallPositionAndTeammates();
         MoveAgent(actionBuffers.DiscreteActions);
     }
 

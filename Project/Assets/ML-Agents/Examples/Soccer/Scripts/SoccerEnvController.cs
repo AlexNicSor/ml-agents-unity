@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using Unity.MLAgents;
 using UnityEngine;
-
+using Soccer;
 public class SoccerEnvController : MonoBehaviour
 {
+
     [System.Serializable]
     public class PlayerInfo
     {
@@ -15,6 +16,9 @@ public class SoccerEnvController : MonoBehaviour
         [HideInInspector]
         public Rigidbody Rb;
     }
+
+
+
 
 
     /// <summary>
@@ -40,7 +44,8 @@ public class SoccerEnvController : MonoBehaviour
     public List<PlayerInfo> AgentsList = new List<PlayerInfo>();
 
     private SoccerSettings m_SoccerSettings;
-
+    public float purpleGoalLineX = 6f;  // Purple goal line
+    public float blueGoalLineX = -6f;
 
     private SimpleMultiAgentGroup m_BlueAgentGroup;
     private SimpleMultiAgentGroup m_PurpleAgentGroup;
@@ -134,5 +139,27 @@ public class SoccerEnvController : MonoBehaviour
 
         //Reset Ball
         ResetBall();
+    }
+
+    public FieldZone GetBallZone()
+    {
+        // Debugging the ball's position and which zone it's in
+        Debug.Log($"Ball position: {ball.transform.position.x}");
+
+        if (ball.transform.position.x > purpleGoalLineX)
+        {
+            Debug.Log("Ball is in PurpleGoal zone.");
+            return FieldZone.PurpleGoal;
+        }
+        if (ball.transform.position.x < blueGoalLineX)
+        {
+            Debug.Log("Ball is in BlueGoal zone.");
+            return FieldZone.BlueGoal;
+        }
+        else
+        {
+            Debug.Log("Ball is in Middle zone.");
+            return FieldZone.Middle;
+        }
     }
 }
