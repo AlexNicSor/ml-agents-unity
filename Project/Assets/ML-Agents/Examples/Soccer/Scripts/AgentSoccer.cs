@@ -39,6 +39,7 @@ public class AgentSoccer : Agent
     float m_Existential;
     float m_LateralSpeed;
     float m_ForwardSpeed;
+    private float timer360 = 0f;
 
 
     [HideInInspector]
@@ -51,6 +52,8 @@ public class AgentSoccer : Agent
     EnvironmentParameters m_ResetParams;
 
     public GameObject ball; // Reference to the ball GameObject
+
+ 
 
     public override void Initialize()
     {
@@ -99,6 +102,46 @@ public class AgentSoccer : Agent
         m_ResetParams = Academy.Instance.EnvironmentParameters;
     }
 
+    private float timer = 0f;
+    private bool turn1 = false;
+    private bool turn2 = false;
+    private bool turn3 = false;
+    private bool turn4 = false;
+    
+    void Update()
+{
+    timer += Time.deltaTime;
+
+    if (timer >= 3f && timer < 3.3f && !turn1)  
+    {
+        transform.Rotate(Vector3.up * 90f); 
+        turn1 = true;
+    }
+    else if (timer >= 3.3f && timer < 3.6f && !turn2)  
+    {
+        transform.Rotate(Vector3.up * -90f);  
+        turn2 = true;
+    }
+    else if (timer >= 3.6f && timer < 3.9f && !turn3)  
+    {
+        transform.Rotate(Vector3.up * -90f);  
+        turn3 = true;
+    }
+    else if (timer >= 3.9f && timer < 4.2f && !turn4)  
+    {
+        transform.Rotate(Vector3.up * 90f);  
+        turn4 = true;
+    }
+    else if (timer >= 4.2f)  
+    {
+        timer = 0f;
+        turn1 = false;
+        turn2 = false;
+        turn3 = false;
+        turn4 = false;
+    }
+}
+
     public void MoveAgent(ActionSegment<int> act)
     {
         var dirToGo = Vector3.zero;
@@ -114,9 +157,17 @@ public class AgentSoccer : Agent
 
         if (!ballVisible)
         {
-            // If the ball is not visible, quickly scan left and right
+            
             float scanSpeed = 5f; // Adjust the speed of scanning
             rotateDir = Vector3.up * Mathf.Sin(Time.time * scanSpeed); // Oscillate between left and right
+            
+
+            timer360 += Time.deltaTime;
+
+        if (timer360 >= 5f)
+        {
+            transform.Rotate(Vector3.up * 180f * Time.deltaTime);
+        }
         }
         else
         {
@@ -132,6 +183,7 @@ public class AgentSoccer : Agent
                     break;
             }
         }
+        
 
         // Lateral movement logic
         switch (rightAxis)
@@ -155,7 +207,7 @@ public class AgentSoccer : Agent
         if (ball != null)
         {
             float distance = Vector3.Distance(transform.position, ball.transform.position);
-            return distance < 10f; // Adjust the distance threshold as needed
+            return distance < 20f; // Adjust the distance threshold as needed
         }
         return false;
     }

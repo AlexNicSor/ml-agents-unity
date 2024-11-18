@@ -1,5 +1,5 @@
 Metadata-Version: 2.1
-Name: mlagents-envs
+Name: mlagents_envs
 Version: 1.1.0.dev0
 Summary: Unity Machine Learning Agents Interface
 Home-page: https://github.com/Unity-Technologies/ml-agents
@@ -11,6 +11,15 @@ Classifier: License :: OSI Approved :: Apache Software License
 Classifier: Programming Language :: Python :: 3.10
 Requires-Python: >=3.10.1,<=3.10.12
 Description-Content-Type: text/markdown
+Requires-Dist: cloudpickle
+Requires-Dist: grpcio<=1.48.2,>=1.11.0
+Requires-Dist: Pillow>=4.2.1
+Requires-Dist: protobuf<3.21,>=3.6
+Requires-Dist: pyyaml>=3.1.0
+Requires-Dist: gym>=0.21.0
+Requires-Dist: pettingzoo==1.15.0
+Requires-Dist: numpy<1.24.0,>=1.23.5
+Requires-Dist: filelock>=3.4.0
 
 # Unity ML-Agents Python Interface
 
