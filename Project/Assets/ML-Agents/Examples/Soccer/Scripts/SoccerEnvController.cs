@@ -59,6 +59,9 @@ public class SoccerEnvController : MonoBehaviour
 
     private int m_ResetTimer;
 
+    private bool passBeforeGoal = false; 
+
+
    
     
 
@@ -113,14 +116,18 @@ public class SoccerEnvController : MonoBehaviour
 
     public void GoalTouched(Team scoredTeam)
     {
+
+        float baseReward = Math.Max((2- (float)m_ResetTimer/MaxEnvironmentSteps), 1f);
+
+
         if (scoredTeam == Team.Blue)
         {
-            m_BlueAgentGroup.AddGroupReward(Math.Max((2 - (float)m_ResetTimer / MaxEnvironmentSteps), 1f));
+            m_BlueAgentGroup.AddGroupReward(baseReward);
             m_PurpleAgentGroup.AddGroupReward(-1);
         }
         else
         {
-            m_PurpleAgentGroup.AddGroupReward(Math.Max((2 - (float)m_ResetTimer / MaxEnvironmentSteps), 1f));
+            m_PurpleAgentGroup.AddGroupReward(baseReward);
             m_BlueAgentGroup.AddGroupReward(-1);
         }
         m_PurpleAgentGroup.EndGroupEpisode();
@@ -187,4 +194,12 @@ public class SoccerEnvController : MonoBehaviour
     public void SetLastPossessor(AgentSoccer player){
         lastPlayer = player;
     }
+    public void SetPassOccured(){
+        passBeforeGoal = true;
+    }
+    public void ResetPassOccured(){
+        passBeforeGoal = false;
+    }
+
+
 }
