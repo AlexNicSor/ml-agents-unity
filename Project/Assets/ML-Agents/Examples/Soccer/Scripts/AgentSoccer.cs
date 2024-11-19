@@ -261,7 +261,7 @@ public class AgentSoccer : Agent
     }
     
     // Add the normalized sound direction as an observation (3 values: x, y, z)
-    sensor.AddObservation(soundDirection);
+    sensor.AddObservation(soundDirection.normalized);
 }
 
 
