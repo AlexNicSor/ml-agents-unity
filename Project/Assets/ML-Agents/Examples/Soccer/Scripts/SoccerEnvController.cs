@@ -2,6 +2,10 @@ using System.Collections.Generic;
 using Unity.MLAgents;
 using UnityEngine;
 using Soccer;
+using Unity.Sentis.Layers;
+using System;
+using Random = UnityEngine.Random;
+using System.Threading;
 public class SoccerEnvController : MonoBehaviour
 {
 
@@ -50,7 +54,13 @@ public class SoccerEnvController : MonoBehaviour
     private SimpleMultiAgentGroup m_BlueAgentGroup;
     private SimpleMultiAgentGroup m_PurpleAgentGroup;
 
+    private AgentSoccer lastPlayer = null;
+    private AgentSoccer currentPlayer = null;
+
     private int m_ResetTimer;
+
+   
+    
 
     void Start()
     {
@@ -105,12 +115,12 @@ public class SoccerEnvController : MonoBehaviour
     {
         if (scoredTeam == Team.Blue)
         {
-            m_BlueAgentGroup.AddGroupReward(1 - (float)m_ResetTimer / MaxEnvironmentSteps);
+            m_BlueAgentGroup.AddGroupReward(Math.Max((2 - (float)m_ResetTimer / MaxEnvironmentSteps), 1f));
             m_PurpleAgentGroup.AddGroupReward(-1);
         }
         else
         {
-            m_PurpleAgentGroup.AddGroupReward(1 - (float)m_ResetTimer / MaxEnvironmentSteps);
+            m_PurpleAgentGroup.AddGroupReward(Math.Max((2 - (float)m_ResetTimer / MaxEnvironmentSteps), 1f));
             m_BlueAgentGroup.AddGroupReward(-1);
         }
         m_PurpleAgentGroup.EndGroupEpisode();
@@ -161,5 +171,20 @@ public class SoccerEnvController : MonoBehaviour
             Debug.Log("Ball is in Middle zone.");
             return FieldZone.Middle;
         }
+    }
+    public AgentSoccer GetCurrentPossessor(){
+        return currentPlayer;
+    }
+
+    public void SetCurrentPossessor(AgentSoccer player){
+        currentPlayer = player;
+    }
+
+    public AgentSoccer GetLastPossessor(){
+        return lastPlayer;
+    }
+
+    public void SetLastPossessor(AgentSoccer player){
+        lastPlayer = player;
     }
 }

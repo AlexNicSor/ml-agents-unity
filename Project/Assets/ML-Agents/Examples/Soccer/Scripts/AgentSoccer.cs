@@ -3,6 +3,7 @@ using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 using Soccer;
+using Unity.Sentis.Layers;
 public enum Team
 {
     Blue = 0,
@@ -44,13 +45,14 @@ public class AgentSoccer : Agent
     BehaviorParameters m_BehaviorParameters;
     public Vector3 initialPos;
     public float rotSign;
-
+    
+    
     EnvironmentParameters m_ResetParams;
 
     public override void Initialize()
     {
         envController = GetComponentInParent<SoccerEnvController>();
-
+        
         if (envController != null)
         {
             m_Existential = 1f / envController.MaxEnvironmentSteps;
@@ -449,6 +451,42 @@ public class AgentSoccer : Agent
             var dir = c.contacts[0].point - transform.position;
             dir = dir.normalized;
             c.gameObject.GetComponent<Rigidbody>().AddForce(dir * force);
+
+
+        //reward for passing the ball to teammates in their field
+        //gets the positions of the ball and checks the current and last possessor 
+        var previousPlayer = envController.GetLastPossessor();
+        envController.SetCurrentPossessor(this);
+
+        //if there is successfull pass 
+        if (previousPlayer != null && previousPlayer != this){
+
+             // if ball goes to the teammate  
+            if(previousPlayer.team == team){
+                //it happens in the enemy field
+                if ((envController.GetBallZone() == FieldZone.PurpleGoal && team == Team.Blue) ||
+                    (envController.GetBallZone() == FieldZone.BlueGoal && team == Team.Purple)){
+                    AddReward(.05f);
+                }
+            } else{
+                AddReward(.05f);
+            }
+            envController.SetLastPossessor(this);
+        }
+
+        //proof of conce0pt 
+        // if (envController.GetLastPossessor() != null &&
+        //     envController.GetLastPossessor() != this &&
+        //     envController.GetLastPossessor().team == team){
+
+        //     if((envController.ball.transform.position.x > 0 && team == Team.Blue) ||
+        //     (envController.ball.transform.position.x <0 && team == Team.Purple)){
+
+        //         AddReward(.05f);
+        //     }
+        // }
+        // envController.SetLastPossessor(this);
+
         }
     }
 
