@@ -2,7 +2,7 @@ using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
-
+using Unity.MLAgents.Sensors;  // For VectorSensor
 public enum Team
 {
     Blue = 0,
@@ -11,6 +11,27 @@ public enum Team
 
 public class AgentSoccer : Agent
 {
+    private SoundSensor soundSensor;
+    private SoundEmitter soundEmitter;
+
+    public override void CollectObservations(VectorSensor sensor)
+    {
+    if (soundSensor == null)
+        {
+            sensor.AddObservation(Vector3.zero); // Add dummy observation if sensor is missing
+            Debug.LogError("SoundSensor is null during CollectObservations.");
+            return;
+        }
+
+        // Add sound direction as an observation
+        Vector3 soundDirection = soundSensor.GetSoundDirection();
+        if (soundDirection == Vector3.zero)
+        {
+            Debug.Log($"{name}: No sound detected.");
+        }
+        sensor.AddObservation(soundDirection.normalized);
+    }
+
     // Note that that the detectable tags are different for the blue and purple teams. The order is
     // * ball
     // * own goal
@@ -50,6 +71,14 @@ public class AgentSoccer : Agent
 
     public override void Initialize()
     {
+        //soundEmitter = GetComponent<SoundEmitter>();
+
+       soundSensor = GetComponent<SoundSensor>();
+        if (soundSensor == null)
+        {
+            Debug.LogError("SoundSensor component missing!");
+        }
+        
         SoccerEnvController envController = GetComponentInParent<SoccerEnvController>();
         if (envController != null)
         {
@@ -145,7 +174,7 @@ public class AgentSoccer : Agent
     public override void OnActionReceived(ActionBuffers actionBuffers)
 
     {
-
+        MoveAgent(actionBuffers.DiscreteActions);
         if (position == Position.Goalie)
         {
             // Existential bonus for Goalies.
@@ -156,7 +185,6 @@ public class AgentSoccer : Agent
             // Existential penalty for Strikers
             AddReward(-m_Existential);
         }
-        MoveAgent(actionBuffers.DiscreteActions);
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -206,6 +234,18 @@ public class AgentSoccer : Agent
             var dir = c.contacts[0].point - transform.position;
             dir = dir.normalized;
             c.gameObject.GetComponent<Rigidbody>().AddForce(dir * force);
+        }
+        if (c.gameObject.CompareTag("ball"))
+        {
+            // Handle sound emitter adjustments based on movement
+            if (agentRb.velocity.magnitude > 0.1f)
+            {
+                soundEmitter.maxVolume = 0.5f; // Movement sound volume
+            }
+            else
+            {
+                soundEmitter.maxVolume = 0.0f;
+            }
         }
     }
 
