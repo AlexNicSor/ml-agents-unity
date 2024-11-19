@@ -13,7 +13,14 @@ public class SoccerBallController : MonoBehaviour
     {
         envController = area.GetComponent<SoccerEnvController>();
         soundEmitter = GetComponent<SoundEmitter>();
+            Debug.LogError("SoundEmitter is missing on the soccer ball!");
+
+        if (soundEmitter == null)
+        {
+            Debug.LogError("SoundEmitter is missing on the soccer ball!");
+        }
     }
+
 
     void OnCollisionEnter(Collision col)
     {

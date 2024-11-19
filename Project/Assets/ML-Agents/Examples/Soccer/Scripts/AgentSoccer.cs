@@ -14,23 +14,6 @@ public class AgentSoccer : Agent
     private SoundSensor soundSensor;
     private SoundEmitter soundEmitter;
 
-    public override void CollectObservations(VectorSensor sensor)
-    {
-    if (soundSensor == null)
-        {
-            sensor.AddObservation(Vector3.zero); // Add dummy observation if sensor is missing
-            Debug.LogError("SoundSensor is null during CollectObservations.");
-            return;
-        }
-
-        // Add sound direction as an observation
-        Vector3 soundDirection = soundSensor.GetSoundDirection();
-        if (soundDirection == Vector3.zero)
-        {
-            Debug.Log($"{name}: No sound detected.");
-        }
-        sensor.AddObservation(soundDirection.normalized);
-    }
 
     // Note that that the detectable tags are different for the blue and purple teams. The order is
     // * ball
@@ -71,12 +54,19 @@ public class AgentSoccer : Agent
 
     public override void Initialize()
     {
-        //soundEmitter = GetComponent<SoundEmitter>();
 
-       soundSensor = GetComponent<SoundSensor>();
+       // Initialize the SoundSensor
+        soundSensor = GetComponent<SoundSensor>();
         if (soundSensor == null)
         {
-            Debug.LogError("SoundSensor component missing!");
+            Debug.LogError("SoundSensor component missing! Ensure it is attached to the agent GameObject.");
+        }
+
+        // Initialize the SoundEmitter
+        soundEmitter = GetComponent<SoundEmitter>();
+        if (soundEmitter == null)
+        {
+            Debug.LogError("SoundEmitter component missing! Ensure it is attached to the agent GameObject.");
         }
         
         SoccerEnvController envController = GetComponentInParent<SoccerEnvController>();
@@ -235,17 +225,14 @@ public class AgentSoccer : Agent
             dir = dir.normalized;
             c.gameObject.GetComponent<Rigidbody>().AddForce(dir * force);
         }
-        if (c.gameObject.CompareTag("ball"))
+        
+        if (soundEmitter != null)
         {
-            // Handle sound emitter adjustments based on movement
-            if (agentRb.velocity.magnitude > 0.1f)
-            {
-                soundEmitter.maxVolume = 0.5f; // Movement sound volume
-            }
-            else
-            {
-                soundEmitter.maxVolume = 0.0f;
-            }
+            soundEmitter.maxVolume = agentRb.velocity.magnitude > 0.1f ? 0.5f : 0.0f;
+        }
+        else
+        {
+            Debug.LogWarning($"{name}: SoundEmitter is not assigned but was referenced in OnCollisionEnter.");
         }
     }
 
@@ -253,5 +240,30 @@ public class AgentSoccer : Agent
     {
         m_BallTouch = m_ResetParams.GetWithDefault("ball_touch", 0);
     }
+
+    public override void CollectObservations(VectorSensor sensor)
+{
+    // Ensure soundSensor is initialized
+    if (soundSensor == null)
+    {
+        Debug.LogError("SoundSensor is null during CollectObservations.");
+        sensor.AddObservation(Vector3.zero); // Add a dummy observation (3 values) if soundSensor is missing
+        return;
+    }
+
+    // Get sound direction from the sensor
+    Vector3 soundDirection = soundSensor.GetSoundDirection();
+    
+    // If soundDirection is zero, log a message for debugging
+    if (soundDirection == Vector3.zero)
+    {
+        Debug.Log($"{name}: No sound detected.");
+    }
+    
+    // Add the normalized sound direction as an observation (3 values: x, y, z)
+    sensor.AddObservation(soundDirection);
+}
+
+
 
 }
