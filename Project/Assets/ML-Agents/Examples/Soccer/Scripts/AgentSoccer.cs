@@ -345,7 +345,6 @@ public class AgentSoccer : Agent
     }
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
-
     {
 
         if (position == Position.Goalie)
@@ -467,25 +466,14 @@ public class AgentSoccer : Agent
                 if ((envController.GetBallZone() == FieldZone.PurpleGoal && team == Team.Blue) ||
                     (envController.GetBallZone() == FieldZone.BlueGoal && team == Team.Purple)){
                     AddReward(.05f);
+                    envController.SetPassOccured();
                 }
-            } else{
-                AddReward(.05f);
+            }else {
+                envController.ResetPassOccured();
+                AddReward(-.5f);
             }
             envController.SetLastPossessor(this);
         }
-
-        //proof of conce0pt 
-        // if (envController.GetLastPossessor() != null &&
-        //     envController.GetLastPossessor() != this &&
-        //     envController.GetLastPossessor().team == team){
-
-        //     if((envController.ball.transform.position.x > 0 && team == Team.Blue) ||
-        //     (envController.ball.transform.position.x <0 && team == Team.Purple)){
-
-        //         AddReward(.05f);
-        //     }
-        // }
-        // envController.SetLastPossessor(this);
 
         }
     }
