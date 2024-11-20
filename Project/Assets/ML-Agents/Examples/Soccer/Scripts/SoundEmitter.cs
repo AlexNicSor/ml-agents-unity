@@ -27,7 +27,7 @@ public class SoundEmitter : MonoBehaviour
     {
         // Visualize the emitter's range for debugging
         Gizmos.color = new Color(1, 0, 0, 0.2f); // Transparent red
-        Gizmos.DrawSphere(transform.position, maxRange);
+        //Gizmos.DrawSphere(transform.position, maxRange);
     }
     
 }

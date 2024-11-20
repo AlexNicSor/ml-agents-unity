@@ -123,6 +123,26 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &49606148 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1682753582128710, guid: 54f3340298537426e96a6cc530e2d5d8,
+    type: 3}
+  m_PrefabInstance: {fileID: 774084574}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &49606155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 49606148}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6f868700cfc44738be3c139a071eb75, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxVolume: 1
+  maxRange: 15
 --- !u!1 &255077123
 GameObject:
   m_ObjectHideFlags: 0
@@ -210,8 +230,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxVolume: 1
-  decayRate: 0.5
-  maxHearingRange: 15
+  maxRange: 15
 --- !u!114 &292328808
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -224,7 +243,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7caa9ea0d7edc4b0f8a17715cdfb5383, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hearingThreshold: 0.1
+  soundEmitterLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  detectionRadius: 15
 --- !u!1001 &296100289
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -388,14 +410,10 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1383518430785328, guid: 54f3340298537426e96a6cc530e2d5d8,
+    - targetCorrespondingSourceObject: {fileID: 1682753582128710, guid: 54f3340298537426e96a6cc530e2d5d8,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1973808187}
-    - targetCorrespondingSourceObject: {fileID: 1383518430785328, guid: 54f3340298537426e96a6cc530e2d5d8,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1973808186}
+      addedObject: {fileID: 49606155}
     - targetCorrespondingSourceObject: {fileID: 1131626411948014, guid: 54f3340298537426e96a6cc530e2d5d8,
         type: 3}
       insertIndex: -1
@@ -531,8 +549,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxVolume: 1
-  decayRate: 0.5
-  maxHearingRange: 15
+  maxRange: 15
 --- !u!114 &1084570786
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -545,7 +562,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7caa9ea0d7edc4b0f8a17715cdfb5383, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hearingThreshold: 0.1
+  soundEmitterLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  detectionRadius: 15
 --- !u!1001 &1348885204
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -614,8 +634,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxVolume: 1
-  decayRate: 0.5
-  maxHearingRange: 15
+  maxRange: 15
 --- !u!114 &1368700011
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -628,7 +647,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7caa9ea0d7edc4b0f8a17715cdfb5383, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hearingThreshold: 0.1
+  soundEmitterLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  detectionRadius: 15
 --- !u!1 &1574236047
 GameObject:
   m_ObjectHideFlags: 0
@@ -760,40 +782,6 @@ LightingSettings:
   m_PVRTiledBaking: 0
   m_NumRaysToShootPerTexel: -1
   m_RespectSceneVisibilityWhenBakingGI: 0
---- !u!1 &1973808184 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1383518430785328, guid: 54f3340298537426e96a6cc530e2d5d8,
-    type: 3}
-  m_PrefabInstance: {fileID: 774084574}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1973808186
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1973808184}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7caa9ea0d7edc4b0f8a17715cdfb5383, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hearingThreshold: 0.1
---- !u!114 &1973808187
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1973808184}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c6f868700cfc44738be3c139a071eb75, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxVolume: 1
-  decayRate: 0.5
-  maxHearingRange: 15
 --- !u!1 &2094027325 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6257467487437560250, guid: 54f3340298537426e96a6cc530e2d5d8,
@@ -813,8 +801,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxVolume: 1
-  decayRate: 0.5
-  maxHearingRange: 15
+  maxRange: 15
 --- !u!114 &2094027328
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -827,7 +814,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7caa9ea0d7edc4b0f8a17715cdfb5383, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hearingThreshold: 0.1
+  soundEmitterLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  detectionRadius: 15
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

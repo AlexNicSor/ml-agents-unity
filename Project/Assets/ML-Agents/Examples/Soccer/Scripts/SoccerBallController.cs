@@ -6,33 +6,36 @@ public class SoccerBallController : MonoBehaviour
     [HideInInspector]
     public SoccerEnvController envController;
     private SoundEmitter soundEmitter;
-    public string purpleGoalTag; //will be used to check if collided with purple goal
-    public string blueGoalTag; //will be used to check if collided with blue goal
+
+    public string purpleGoalTag;
+    public string blueGoalTag;
+
+    public static bool BallTouched { get; private set; } = false; // Static flag
 
     void Start()
     {
         envController = area.GetComponent<SoccerEnvController>();
         soundEmitter = GetComponent<SoundEmitter>();
-            Debug.LogError("SoundEmitter is missing on the soccer ball!");
-
-        if (soundEmitter == null)
-        {
-            Debug.LogError("SoundEmitter is missing on the soccer ball!");
-        }
+        soundEmitter.maxVolume = 1.0f;
+        Debug.Log($"Soccer ball emitted sound with maxVolume: {soundEmitter.maxVolume}");
     }
-
 
     void OnCollisionEnter(Collision col)
     {
-        if (col.gameObject.CompareTag(purpleGoalTag)) //ball touched purple goal
+        if (col.gameObject.CompareTag(purpleGoalTag))
         {
             envController.GoalTouched(Team.Blue);
         }
-        if (col.gameObject.CompareTag(blueGoalTag)) //ball touched blue goal
+        if (col.gameObject.CompareTag(blueGoalTag))
         {
             envController.GoalTouched(Team.Purple);
         }
-        soundEmitter.maxVolume = 1.0f;  // Emit sound when the ball collides with a player or goalpost
 
+        // Mark ball as touched
+        BallTouched = true;
+
+        // Emit sound when ball is touched
+        soundEmitter.maxVolume = 1.0f;
+        Debug.Log($"Soccer ball emitted sound with maxVolume: {soundEmitter.maxVolume}");
     }
 }
