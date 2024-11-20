@@ -14,10 +14,10 @@ public class SoccerBallController : MonoBehaviour
 
     void Start()
     {
+        ResetBallTouched();
         envController = area.GetComponent<SoccerEnvController>();
         soundEmitter = GetComponent<SoundEmitter>();
-        soundEmitter.maxVolume = 1.0f;
-        Debug.Log($"Soccer ball emitted sound with maxVolume: {soundEmitter.maxVolume}");
+        soundEmitter.maxVolume = 0.0f; // No sound initially
     }
 
     void OnCollisionEnter(Collision col)
@@ -35,7 +35,22 @@ public class SoccerBallController : MonoBehaviour
         BallTouched = true;
 
         // Emit sound when ball is touched
-        soundEmitter.maxVolume = 1.0f;
-        Debug.Log($"Soccer ball emitted sound with maxVolume: {soundEmitter.maxVolume}");
+        if (soundEmitter != null)
+        {
+            soundEmitter.maxVolume = 1.0f; // Activate sound
+        }
+    }
+
+    public static void ResetBallTouched()
+    {
+        BallTouched = false;
+    }
+
+    public void ResetSoundEmitter()
+    {
+        if (soundEmitter != null)
+        {
+            soundEmitter.maxVolume = 0.0f; // Reset sound
+        }
     }
 }

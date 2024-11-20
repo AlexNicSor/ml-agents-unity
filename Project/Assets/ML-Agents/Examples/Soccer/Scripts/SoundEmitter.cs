@@ -16,8 +16,8 @@ public class SoundEmitter : MonoBehaviour
         Vector3 direction = transform.position - listenerPosition;
         float distance = direction.magnitude;
 
-        if (distance > maxRange)
-            return Vector3.zero; // No sound beyond max range
+        if (distance > maxRange || maxVolume <= 0.0f)
+            return Vector3.zero; // No sound beyond max range or if muted
 
         float intensity = maxVolume * (1.0f - (distance / maxRange));
         return direction.normalized * intensity;
@@ -27,7 +27,6 @@ public class SoundEmitter : MonoBehaviour
     {
         // Visualize the emitter's range for debugging
         Gizmos.color = new Color(1, 0, 0, 0.2f); // Transparent red
-        //Gizmos.DrawSphere(transform.position, maxRange);
+        Gizmos.DrawWireSphere(transform.position, maxRange);
     }
-    
 }

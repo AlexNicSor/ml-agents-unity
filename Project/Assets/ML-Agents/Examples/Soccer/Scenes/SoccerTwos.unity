@@ -123,6 +123,28 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &155525533 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6257467487437560250, guid: 54f3340298537426e96a6cc530e2d5d8,
+    type: 3}
+  m_PrefabInstance: {fileID: 774084574}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &155525535
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 155525533}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7caa9ea0d7edc4b0f8a17715cdfb5383, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  soundEmitterLayer:
+    serializedVersion: 2
+    m_Bits: 524288
+  detectionRadius: 10
 --- !u!1 &234498515 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1836679221278734, guid: 54f3340298537426e96a6cc530e2d5d8,
@@ -142,8 +164,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxVolume: 1
-  decayRate: 0.5
-  maxHearingRange: 15
+  maxRange: 15
 --- !u!114 &234498520
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -156,7 +177,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7caa9ea0d7edc4b0f8a17715cdfb5383, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hearingThreshold: 0.1
+  soundEmitterLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  detectionRadius: 10
 --- !u!1 &255077123
 GameObject:
   m_ObjectHideFlags: 0
@@ -328,6 +352,28 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3ce107b4a79bc4eef83afde434932a68, type: 3}
+--- !u!1 &390422333 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1095606497496374, guid: 54f3340298537426e96a6cc530e2d5d8,
+    type: 3}
+  m_PrefabInstance: {fileID: 774084574}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &390422335
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 390422333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7caa9ea0d7edc4b0f8a17715cdfb5383, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  soundEmitterLayer:
+    serializedVersion: 2
+    m_Bits: 524288
+  detectionRadius: 10
 --- !u!1001 &478056696
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -381,6 +427,28 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 54f3340298537426e96a6cc530e2d5d8, type: 3}
+--- !u!1 &527839945 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1131626411948014, guid: 54f3340298537426e96a6cc530e2d5d8,
+    type: 3}
+  m_PrefabInstance: {fileID: 774084574}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &527839947
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 527839945}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7caa9ea0d7edc4b0f8a17715cdfb5383, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  soundEmitterLayer:
+    serializedVersion: 2
+    m_Bits: 524288
+  detectionRadius: 10
 --- !u!1001 &774084574
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -441,6 +509,10 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1131626411948014, guid: 54f3340298537426e96a6cc530e2d5d8,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 527839947}
     - targetCorrespondingSourceObject: {fileID: 1083582452036196, guid: 54f3340298537426e96a6cc530e2d5d8,
         type: 3}
       insertIndex: -1
@@ -449,6 +521,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1291836022}
+    - targetCorrespondingSourceObject: {fileID: 1095606497496374, guid: 54f3340298537426e96a6cc530e2d5d8,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 390422335}
     - targetCorrespondingSourceObject: {fileID: 1836679221278734, guid: 54f3340298537426e96a6cc530e2d5d8,
         type: 3}
       insertIndex: -1
@@ -457,6 +533,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 234498519}
+    - targetCorrespondingSourceObject: {fileID: 8360301818957399454, guid: 54f3340298537426e96a6cc530e2d5d8,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1715036188}
     - targetCorrespondingSourceObject: {fileID: 6007240757639156798, guid: 54f3340298537426e96a6cc530e2d5d8,
         type: 3}
       insertIndex: -1
@@ -465,6 +545,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1025186318}
+    - targetCorrespondingSourceObject: {fileID: 6257467487437560250, guid: 54f3340298537426e96a6cc530e2d5d8,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 155525535}
     - targetCorrespondingSourceObject: {fileID: 6442519122303792292, guid: 54f3340298537426e96a6cc530e2d5d8,
         type: 3}
       insertIndex: -1
@@ -575,7 +659,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7caa9ea0d7edc4b0f8a17715cdfb5383, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hearingThreshold: 0.1
+  soundEmitterLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  detectionRadius: 10
 --- !u!114 &1025186319
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -589,8 +676,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxVolume: 1
-  decayRate: 0.5
-  maxHearingRange: 15
+  maxRange: 15
 --- !u!1001 &1031665005
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -715,7 +801,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7caa9ea0d7edc4b0f8a17715cdfb5383, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hearingThreshold: 0.1
+  soundEmitterLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  detectionRadius: 10
 --- !u!114 &1291836023
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -729,8 +818,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxVolume: 1
-  decayRate: 0.5
-  maxHearingRange: 15
+  maxRange: 15
 --- !u!1001 &1325062279
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -852,8 +940,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxVolume: 1
-  decayRate: 0.5
-  maxHearingRange: 15
+  maxRange: 15
 --- !u!114 &1548778308
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -866,7 +953,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7caa9ea0d7edc4b0f8a17715cdfb5383, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hearingThreshold: 0.1
+  soundEmitterLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  detectionRadius: 10
 --- !u!1 &1574236047
 GameObject:
   m_ObjectHideFlags: 0
@@ -987,6 +1077,28 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 54f3340298537426e96a6cc530e2d5d8, type: 3}
+--- !u!1 &1715036186 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8360301818957399454, guid: 54f3340298537426e96a6cc530e2d5d8,
+    type: 3}
+  m_PrefabInstance: {fileID: 774084574}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1715036188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1715036186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7caa9ea0d7edc4b0f8a17715cdfb5383, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  soundEmitterLayer:
+    serializedVersion: 2
+    m_Bits: 524288
+  detectionRadius: 10
 --- !u!1001 &1748755984
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -12,7 +12,6 @@ public enum Team
 public class AgentSoccer : Agent
 {
     private SoundSensor soundSensor;
-    //private SoundEmitter soundEmitter;
 
 
     // Note that that the detectable tags are different for the blue and purple teams. The order is
@@ -61,13 +60,6 @@ public class AgentSoccer : Agent
         {
             Debug.LogError("SoundSensor component missing! Ensure it is attached to the agent GameObject.");
         }
-
-        // Initialize the SoundEmitter
-        // soundEmitter = GetComponent<SoundEmitter>();
-        // if (soundEmitter == null)
-        // {
-        //     Debug.LogError("SoundEmitter component missing! Ensure it is attached to the agent GameObject.");
-        // }
         
         SoccerEnvController envController = GetComponentInParent<SoccerEnvController>();
         if (envController != null)
@@ -239,38 +231,29 @@ public class AgentSoccer : Agent
     public override void OnEpisodeBegin()
     {
         m_BallTouch = m_ResetParams.GetWithDefault("ball_touch", 0);
+
+        // Reset ball touched state
+        SoccerBallController.ResetBallTouched();
+
+        // Reset sound emitter for the ball
+        var ballController = FindObjectOfType<SoccerBallController>();
+        if (ballController != null)
+        {
+            ballController.ResetSoundEmitter();
+        }
     }
 
     public override void CollectObservations(VectorSensor sensor)
-{
-    // Ensure soundSensor is initialized
-    if (soundSensor == null)
     {
-        Debug.LogError("SoundSensor is null during CollectObservations.");
-        sensor.AddObservation(Vector3.zero); // Add dummy observation
-        return;
+        Vector3 soundObservation = Vector3.zero;
+
+        // Only detect sound if the ball has been touched
+        if (SoccerBallController.BallTouched && soundSensor != null)
+        {
+            soundObservation = soundSensor.GetSoundDirection();
+        }
+
+        sensor.AddObservation(soundObservation.normalized);
     }
 
-    // Only activate sound sensor after ball is touched
-    if (!SoccerBallController.BallTouched)
-    {
-        Debug.Log($"{name}: Ball not touched yet. Adding default observations.");
-        sensor.AddObservation(Vector3.zero); // Add dummy observation
-        return;
-    }
-
-    // Get sound direction from the sensor
-    Vector3 soundDirection = soundSensor.GetSoundDirection();
-
-    // Ensure soundDirection is valid
-    if (soundDirection == Vector3.zero)
-    {
-        Debug.LogWarning($"{name}: No sound detected. Adding zero observation.");
-        sensor.AddObservation(Vector3.zero);
-    }
-    else
-    {
-        sensor.AddObservation(soundDirection.normalized);
-    }
-}
 }
