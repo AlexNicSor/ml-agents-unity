@@ -2,7 +2,7 @@ using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
-
+using Unity.MLAgents.Sensors;  // For VectorSensor
 public enum Team
 {
     Blue = 0,
@@ -11,6 +11,9 @@ public enum Team
 
 public class AgentSoccer : Agent
 {
+    private SoundSensor soundSensor;
+
+
     // Note that that the detectable tags are different for the blue and purple teams. The order is
     // * ball
     // * own goal
@@ -50,6 +53,14 @@ public class AgentSoccer : Agent
 
     public override void Initialize()
     {
+
+       // Initialize the SoundSensor
+        soundSensor = GetComponent<SoundSensor>();
+        if (soundSensor == null)
+        {
+            Debug.LogError("SoundSensor component missing! Ensure it is attached to the agent GameObject.");
+        }
+        
         SoccerEnvController envController = GetComponentInParent<SoccerEnvController>();
         if (envController != null)
         {
@@ -145,7 +156,7 @@ public class AgentSoccer : Agent
     public override void OnActionReceived(ActionBuffers actionBuffers)
 
     {
-
+        MoveAgent(actionBuffers.DiscreteActions);
         if (position == Position.Goalie)
         {
             // Existential bonus for Goalies.
@@ -156,7 +167,6 @@ public class AgentSoccer : Agent
             // Existential penalty for Strikers
             AddReward(-m_Existential);
         }
-        MoveAgent(actionBuffers.DiscreteActions);
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -190,9 +200,7 @@ public class AgentSoccer : Agent
             discreteActionsOut[1] = 2;
         }
     }
-    /// <summary>
-    /// Used to provide a "kick" to the ball.
-    /// </summary>
+
     void OnCollisionEnter(Collision c)
     {
         var force = k_Power * m_KickPower;
@@ -212,6 +220,37 @@ public class AgentSoccer : Agent
     public override void OnEpisodeBegin()
     {
         m_BallTouch = m_ResetParams.GetWithDefault("ball_touch", 0);
+
+        // Reset ball touched state
+        SoccerBallController.ResetBallTouched();
+
+        // Reset sound emitter for the ball
+        var ballController = FindObjectOfType<SoccerBallController>();
+        if (ballController != null)
+        {
+            ballController.ResetSoundEmitter();
+        }
+    }
+
+    public override void CollectObservations(VectorSensor sensor)
+    {
+
+        if (soundSensor == null)
+    {
+        Debug.LogError("SoundSensor is null. Check if it's attached or initialized correctly.");
+        return;
+    }
+
+
+        // Trigger the sound detection
+        soundSensor.UpdateSoundDetection();
+
+        // Add sound observations
+        sensor.AddObservation(soundSensor.SoundIntensity); // Intensity of the sound
+        sensor.AddObservation(soundSensor.SoundDirection.x);
+        sensor.AddObservation(soundSensor.SoundDirection.z);
+        sensor.AddObservation(soundSensor.RelativeVelocity.x);
+        sensor.AddObservation(soundSensor.RelativeVelocity.z);
     }
 
 }
