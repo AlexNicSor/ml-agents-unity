@@ -116,18 +116,21 @@ public class SoccerEnvController : MonoBehaviour
 
     public void GoalTouched(Team scoredTeam)
     {
-
+        //base reward
         float baseReward = Math.Max((2- (float)m_ResetTimer/MaxEnvironmentSteps), 1f);
+
+        //bonus points for passing before the goal
+        float passBonus = passBeforeGoal? .5f : 0f;
 
 
         if (scoredTeam == Team.Blue)
         {
-            m_BlueAgentGroup.AddGroupReward(baseReward);
+            m_BlueAgentGroup.AddGroupReward(baseReward + passBonus);
             m_PurpleAgentGroup.AddGroupReward(-1);
         }
         else
         {
-            m_PurpleAgentGroup.AddGroupReward(baseReward);
+            m_PurpleAgentGroup.AddGroupReward(baseReward + passBonus);
             m_BlueAgentGroup.AddGroupReward(-1);
         }
         m_PurpleAgentGroup.EndGroupEpisode();
