@@ -3,6 +3,8 @@ using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 using Soccer;
+using Unity.MLAgents.Sensors;
+using System.Collections.Generic;
 public enum Team
 {
     Blue = 0,
@@ -491,6 +493,26 @@ public class AgentSoccer : Agent
         m_BallTouch = m_ResetParams.GetWithDefault("ball_touch", 0);
     }
 
+
+    private List<GameObject> nearbyAgents = new List<GameObject>();
+
+    void OnTriggerEnter(Collider other)
+    {
+        if ((other.CompareTag("blueAgent") || other.CompareTag("ball") || other.CompareTag("purpleAgent")) && !nearbyAgents.Contains(other.gameObject))
+        {
+            nearbyAgents.Add(other.gameObject);
+        }
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        if (nearbyAgents.Contains(other.gameObject))
+        {
+            nearbyAgents.Remove(other.gameObject);
+        }
+    }
+
+
     void Update()
     {
         timer += Time.deltaTime;
@@ -522,6 +544,60 @@ public class AgentSoccer : Agent
             turn2 = false;
             turn3 = false;
             turn4 = false;
+        }
+    }
+
+    public override void CollectObservations(VectorSensor sensor)
+    {
+        int countObservations = 0;
+        if (nearbyAgents.Count == 0)
+        {
+            sensor.AddObservation(0);
+            sensor.AddObservation(Vector3.zero);
+            countObservations++;
+        }
+
+        foreach (GameObject nearbyAgent in nearbyAgents)
+        {
+
+            if (nearbyAgent.CompareTag("ball")) // reward for being near the ball
+            {
+                AddReward(0.1f);
+            }
+            // if ball moves towards opponent's goal, give a small reward
+            // otherwise, give a small penalty
+            if (nearbyAgent.gameObject.CompareTag("ball"))
+            {
+                // get the blue and purple goals
+                GameObject blueGoal = GameObject.FindGameObjectsWithTag("blueGoal")[0];
+                GameObject purpleGoal = GameObject.FindGameObjectsWithTag("purpleGoal")[0];
+                // ball's moving direction
+                Vector3 movingDir = nearbyAgent.gameObject.GetComponent<Rigidbody>().velocity.normalized;
+                // direction to blue and purple goals from ball
+                Vector3 dirToBlueGoal = (blueGoal.transform.position - nearbyAgent.transform.position).normalized;
+                Vector3 dirToPurpleGoal = (purpleGoal.transform.position - nearbyAgent.transform.position).normalized;
+
+                if ((Vector3.Dot(movingDir, dirToBlueGoal) > 0 && team == Team.Purple) || (Vector3.Dot(movingDir, dirToPurpleGoal) > 0 && team == Team.Blue))
+                {
+                    AddReward(0.5f);
+                }
+                else if ((Vector3.Dot(movingDir, dirToBlueGoal) < 0 && team == Team.Purple) || (Vector3.Dot(movingDir, dirToPurpleGoal) < 0 && team == Team.Blue))
+                {
+                    AddReward(-0.2f);
+                }
+            }
+
+            Vector3 relativePosition = transform.InverseTransformPoint(nearbyAgent.transform.position);
+            sensor.AddObservation(nearbyAgent.CompareTag("ball") ? 1 : nearbyAgent.CompareTag("blueAgent") ? 2 : 3);
+            sensor.AddObservation(relativePosition);
+            countObservations++;
+        }
+
+        while (countObservations < 4) // adds observations until there are 16 total across all agents (4 per agent)
+        {
+            sensor.AddObservation(0);
+            sensor.AddObservation(Vector3.zero);
+            countObservations++;
         }
     }
 
