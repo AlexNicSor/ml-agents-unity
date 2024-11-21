@@ -158,6 +158,26 @@ public class AgentSoccer : Agent
             // Existential penalty for Strikers
             AddReward(-m_Existential);
         }
+
+
+        foreach (GameObject nearbyAgent in nearbyAgents)
+        {
+            if (nearbyAgent.CompareTag("ball")) // reward for being near the ball
+            {
+                AddReward(0.1f);
+            }
+            // reward for being near teammates
+            else if ((team == Team.Blue && nearbyAgent.CompareTag("blueAgent")) || (team == Team.Purple && nearbyAgent.CompareTag("purpleAgent")))
+            {
+                AddReward(0.05f);
+            }
+            // penalty for being near opponents
+            else if ((team == Team.Blue && nearbyAgent.CompareTag("purpleAgent")) || (team == Team.Purple && nearbyAgent.CompareTag("blueAgent")))
+            {
+                AddReward(-0.02f);
+            }
+        }
+
         MoveAgent(actionBuffers.DiscreteActions);
     }
 
@@ -209,6 +229,30 @@ public class AgentSoccer : Agent
             dir = dir.normalized;
             c.gameObject.GetComponent<Rigidbody>().AddForce(dir * force);
         }
+
+        // if ball moves towards opponent's goal, give a small reward
+        // otherwise, give a small penalty
+        if (c.gameObject.CompareTag("ball"))
+        {
+            // get the blue and purple goals
+            GameObject blueGoal = GameObject.FindGameObjectsWithTag("blueGoal")[0];        
+            GameObject purpleGoal = GameObject.FindGameObjectsWithTag("purpleGoal")[0];
+            // ball's moving direction
+            Vector3 movingDir = c.gameObject.GetComponent<Rigidbody>().velocity.normalized;
+            // direction to blue and purple goals from ball
+            Vector3 dirToBlueGoal = (blueGoal.transform.position - c.transform.position).normalized;
+            Vector3 dirToPurpleGoal = (purpleGoal.transform.position - c.transform.position).normalized;
+        
+            if ((Vector3.Dot(movingDir, dirToBlueGoal) > 0 && team == Team.Purple) || (Vector3.Dot(movingDir, dirToPurpleGoal) > 0 && team == Team.Blue))
+            {
+                AddReward(0.5f);
+            }
+            else if ((Vector3.Dot(movingDir, dirToBlueGoal) < 0 && team == Team.Purple) || (Vector3.Dot(movingDir, dirToPurpleGoal) < 0 && team == Team.Blue))
+            {
+                AddReward(-0.2f);
+            }
+        }
+
     }
 
     public override void OnEpisodeBegin()
@@ -254,7 +298,7 @@ public class AgentSoccer : Agent
             countObservations++;
         }
 
-        while (countObservations < 2)
+        while (countObservations < 2) // adds observations until there are 8 total across all agents (2 per agent)
         {
             sensor.AddObservation(0);
             sensor.AddObservation(Vector3.zero);
