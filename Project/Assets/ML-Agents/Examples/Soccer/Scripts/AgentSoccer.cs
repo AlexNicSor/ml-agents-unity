@@ -3,6 +3,7 @@ using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 using Soccer;
+using Unity.Sentis.Layers;
 using Unity.MLAgents.Sensors;
 using System.Collections.Generic;
 public enum Team
@@ -47,7 +48,8 @@ public class AgentSoccer : Agent
     BehaviorParameters m_BehaviorParameters;
     public Vector3 initialPos;
     public float rotSign;
-
+    
+    
     EnvironmentParameters m_ResetParams;
 
     public GameObject ball; // Reference to the ball GameObject
@@ -63,7 +65,7 @@ public class AgentSoccer : Agent
     public override void Initialize()
     {
         envController = GetComponentInParent<SoccerEnvController>();
-
+        
         if (envController != null)
         {
             m_Existential = 1f / envController.MaxEnvironmentSteps;
@@ -379,7 +381,6 @@ public class AgentSoccer : Agent
     }
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
-
     {
 
         if (position == Position.Goalie)
@@ -485,6 +486,31 @@ public class AgentSoccer : Agent
             var dir = c.contacts[0].point - transform.position;
             dir = dir.normalized;
             c.gameObject.GetComponent<Rigidbody>().AddForce(dir * force);
+
+
+        //reward for passing the ball to teammates in their field
+        //gets the positions of the ball and checks the current and last possessor 
+        var previousPlayer = envController.GetLastPossessor();
+        envController.SetCurrentPossessor(this);
+
+        //if there is successfull pass 
+        if (previousPlayer != null && previousPlayer != this){
+
+             // if ball goes to the teammate  
+            if(previousPlayer.team == team){
+                //it happens in the enemy field
+                if ((envController.GetBallZone() == FieldZone.PurpleGoal && team == Team.Blue) ||
+                    (envController.GetBallZone() == FieldZone.BlueGoal && team == Team.Purple)){
+                    AddReward(.05f);
+                    envController.SetPassOccured();
+                }
+            }else {
+                envController.ResetPassOccured();
+                AddReward(-.5f);
+            }
+            envController.SetLastPossessor(this);
+        }
+
         }
     }
 
