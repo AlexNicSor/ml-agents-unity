@@ -36,6 +36,7 @@ public class AgentSoccer : Agent
     float m_Existential;
     float m_LateralSpeed;
     float m_ForwardSpeed;
+    private float timer360 = 0f;
     private SoccerEnvController envController;
 
     [HideInInspector]
@@ -46,6 +47,16 @@ public class AgentSoccer : Agent
     public float rotSign;
 
     EnvironmentParameters m_ResetParams;
+
+    public GameObject ball; // Reference to the ball GameObject
+
+
+
+    private float timer = 0f;
+    private bool turn1 = false;
+    private bool turn2 = false;
+    private bool turn3 = false;
+    private bool turn4 = false;
 
     public override void Initialize()
     {
@@ -304,42 +315,65 @@ public class AgentSoccer : Agent
 
         var forwardAxis = act[0];
         var rightAxis = act[1];
-        var rotateAxis = act[2];
 
-        switch (forwardAxis)
+        // Check if the ball is visible
+        bool ballVisible = IsBallVisible();
+
+        if (!ballVisible)
         {
-            case 1:
-                dirToGo = transform.forward * m_ForwardSpeed;
-                m_KickPower = 1f;
-                break;
-            case 2:
-                dirToGo = transform.forward * -m_ForwardSpeed;
-                break;
+
+            float scanSpeed = 5f; // Adjust the speed of scanning
+            rotateDir = Vector3.up * Mathf.Sin(Time.time * scanSpeed); // Oscillate between left and right
+
+
+            timer360 += Time.deltaTime;
+
+            if (timer360 >= 5f)
+            {
+                transform.Rotate(Vector3.up * 180f * Time.deltaTime);
+            }
+        }
+        else
+        {
+            // Allow forward/backward movement based on action input when the ball is visible
+            switch (forwardAxis)
+            {
+                case 1:
+                    dirToGo = transform.forward * m_ForwardSpeed; // Move forward
+                    m_KickPower = 1f;
+                    break;
+                case 2:
+                    dirToGo = transform.forward * -m_ForwardSpeed; // Move backward
+                    break;
+            }
         }
 
+
+        // Lateral movement logic
         switch (rightAxis)
         {
             case 1:
-                dirToGo = transform.right * m_LateralSpeed;
+                dirToGo += transform.right * m_LateralSpeed; // Move right
                 break;
             case 2:
-                dirToGo = transform.right * -m_LateralSpeed;
+                dirToGo += transform.right * -m_LateralSpeed; // Move left
                 break;
         }
 
-        switch (rotateAxis)
-        {
-            case 1:
-                rotateDir = transform.up * -1f;
-                break;
-            case 2:
-                rotateDir = transform.up * 1f;
-                break;
-        }
-
+        // Apply rotation and movement
         transform.Rotate(rotateDir, Time.deltaTime * 100f);
-        agentRb.AddForce(dirToGo * m_SoccerSettings.agentRunSpeed,
-            ForceMode.VelocityChange);
+        agentRb.AddForce(dirToGo * m_SoccerSettings.agentRunSpeed, ForceMode.VelocityChange);
+    }
+
+    // New method to check if the ball is visible
+    private bool IsBallVisible()
+    {
+        if (ball != null)
+        {
+            float distance = Vector3.Distance(transform.position, ball.transform.position);
+            return distance < 20f; // Adjust the distance threshold as needed
+        }
+        return false;
     }
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
@@ -455,6 +489,40 @@ public class AgentSoccer : Agent
     public override void OnEpisodeBegin()
     {
         m_BallTouch = m_ResetParams.GetWithDefault("ball_touch", 0);
+    }
+
+    void Update()
+    {
+        timer += Time.deltaTime;
+
+        if (timer >= 3f && timer < 3.3f && !turn1)
+        {
+            transform.Rotate(Vector3.up * 90f);
+            turn1 = true;
+        }
+        else if (timer >= 3.3f && timer < 3.6f && !turn2)
+        {
+            transform.Rotate(Vector3.up * -90f);
+            turn2 = true;
+        }
+        else if (timer >= 3.6f && timer < 3.9f && !turn3)
+        {
+            transform.Rotate(Vector3.up * -90f);
+            turn3 = true;
+        }
+        else if (timer >= 3.9f && timer < 4.2f && !turn4)
+        {
+            transform.Rotate(Vector3.up * 90f);
+            turn4 = true;
+        }
+        else if (timer >= 4.2f)
+        {
+            timer = 0f;
+            turn1 = false;
+            turn2 = false;
+            turn3 = false;
+            turn4 = false;
+        }
     }
 
 }
