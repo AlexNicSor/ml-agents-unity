@@ -8,7 +8,6 @@ using Random = UnityEngine.Random;
 using System.Threading;
 public class SoccerEnvController : MonoBehaviour
 {
-
     [System.Serializable]
     public class PlayerInfo
     {
@@ -67,7 +66,6 @@ public class SoccerEnvController : MonoBehaviour
 
     void Start()
     {
-
         m_SoccerSettings = FindObjectOfType<SoccerSettings>();
         // Initialize TeamManager
         m_BlueAgentGroup = new SimpleMultiAgentGroup();
@@ -76,6 +74,7 @@ public class SoccerEnvController : MonoBehaviour
         m_BallStartingPos = new Vector3(ball.transform.position.x, ball.transform.position.y, ball.transform.position.z);
         foreach (var item in AgentsList)
         {
+            item.Agent.ball = ball;
             item.StartingPos = item.Agent.transform.position;
             item.StartingRot = item.Agent.transform.rotation;
             item.Rb = item.Agent.GetComponent<Rigidbody>();
@@ -132,6 +131,7 @@ public class SoccerEnvController : MonoBehaviour
         {
             m_PurpleAgentGroup.AddGroupReward(baseReward + passBonus);
             m_BlueAgentGroup.AddGroupReward(-1);
+
         }
         m_PurpleAgentGroup.EndGroupEpisode();
         m_BlueAgentGroup.EndGroupEpisode();
