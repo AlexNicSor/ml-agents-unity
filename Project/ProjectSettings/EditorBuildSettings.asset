@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/ML-Agents/Examples/Soccer/Scenes/SoccerTwosTraining.unity
+    guid: 103d3a7e5a9d4686291df2491996675d
   m_configObjects: {}

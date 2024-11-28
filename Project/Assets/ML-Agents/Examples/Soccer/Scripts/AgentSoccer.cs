@@ -588,7 +588,7 @@ public class AgentSoccer : Agent
 
             if (nearbyAgent.CompareTag("ball")) // reward for being near the ball
             {
-                AddReward(0.1f);
+                AddReward(0.2f);
             }
             // if ball moves towards opponent's goal, give a small reward
             // otherwise, give a small penalty
@@ -605,7 +605,7 @@ public class AgentSoccer : Agent
 
                 if ((Vector3.Dot(movingDir, dirToBlueGoal) > 0 && team == Team.Purple) || (Vector3.Dot(movingDir, dirToPurpleGoal) > 0 && team == Team.Blue))
                 {
-                    AddReward(0.5f);
+                    AddReward(0.2f);
                 }
                 else if ((Vector3.Dot(movingDir, dirToBlueGoal) < 0 && team == Team.Purple) || (Vector3.Dot(movingDir, dirToPurpleGoal) < 0 && team == Team.Blue))
                 {
