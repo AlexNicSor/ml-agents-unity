@@ -157,6 +157,22 @@ public class AgentSoccer : Agent
 
     {
         MoveAgent(actionBuffers.DiscreteActions);
+
+        MoveAgent(actionBuffers.DiscreteActions);
+
+        // Reward for movement toward the sound source
+        if (soundSensor != null)
+        {
+            Vector3 movementDirection = agentRb.velocity.normalized;
+            float alignmentWithSound = Vector3.Dot(movementDirection, soundSensor.SoundDirection);
+
+            // Reward if the agent is moving toward the ball
+            if (soundSensor.SoundIntensity > 0) // Only reward if the ball is audible
+            {
+                AddReward(alignmentWithSound * 0.1f); // Scale reward appropriately
+            }
+        }
+
         if (position == Position.Goalie)
         {
             // Existential bonus for Goalies.
@@ -233,17 +249,10 @@ public class AgentSoccer : Agent
     }
 
     public override void CollectObservations(VectorSensor sensor)
-    {
-
-        if (soundSensor == null)
-    {
-        Debug.LogError("SoundSensor is null. Check if it's attached or initialized correctly.");
-        return;
-    }
-
-
+    {       
         // Trigger the sound detection
         soundSensor.UpdateSoundDetection();
+        Debug.Log($"Number of observations added: {sensor.ObservationSize()}");
 
         // Add sound observations
         sensor.AddObservation(soundSensor.SoundIntensity); // Intensity of the sound
@@ -252,5 +261,4 @@ public class AgentSoccer : Agent
         sensor.AddObservation(soundSensor.RelativeVelocity.x);
         sensor.AddObservation(soundSensor.RelativeVelocity.z);
     }
-
 }
