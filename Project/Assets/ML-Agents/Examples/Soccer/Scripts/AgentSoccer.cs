@@ -169,7 +169,7 @@ public class AgentSoccer : Agent
             // Reward if the agent is moving toward the ball
             if (soundSensor.SoundIntensity > 0) // Only reward if the ball is audible
             {
-                AddReward(alignmentWithSound * 0.1f); // Scale reward appropriately
+                AddReward(0.1f); // Scale reward appropriately
             }
         }
 
