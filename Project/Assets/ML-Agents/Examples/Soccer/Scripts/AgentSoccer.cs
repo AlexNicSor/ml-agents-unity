@@ -47,7 +47,19 @@ public class AgentSoccer : Agent
     BehaviorParameters m_BehaviorParameters;
     public Vector3 initialPos;
     public float rotSign;
-    
+
+    [Header("Vision Settings")]
+    public float visionRange = 10f;
+    public float visionAngle = 90f;
+    public float visionRotationSpeed = 45f;
+    private float currentVisionAngle = 0f;
+
+    [SerializeField]
+    private Transform visionConeTransform;
+
+    [SerializeField]
+    private LayerMask visionMask;
+
     
     EnvironmentParameters m_ResetParams;
 
@@ -106,6 +118,17 @@ public class AgentSoccer : Agent
         m_SoccerSettings = FindObjectOfType<SoccerSettings>();
         agentRb = GetComponent<Rigidbody>();
         agentRb.maxAngularVelocity = 500;
+        
+        m_BehaviorParameters = gameObject.GetComponent<BehaviorParameters>();
+        var discreteActionSpec = ActionSpec.MakeDiscrete(3, 3, 3, 3);
+        m_BehaviorParameters.BrainParameters.ActionSpec = discreteActionSpec;
+
+    // Initialize vision cone
+    if (visionConeTransform == null)
+    {
+        visionConeTransform = transform.Find("VisionCone");
+    }
+    currentVisionAngle = transform.eulerAngles.y;
 
         m_ResetParams = Academy.Instance.EnvironmentParameters;
     }
@@ -312,23 +335,74 @@ public class AgentSoccer : Agent
 
     public void MoveAgent(ActionSegment<int> act)
     {
+        var dirToGo = Vector3.zero;
+        var rotateDir = Vector3.zero;
+
         m_KickPower = 0f;
 
         var forwardAxis = act[0];
         var rightAxis = act[1];
+        var rotateAxis = act[2];
+        var visionConeAxis = act[3];
 
-        // Check if the ball is visible
-        bool canSeeBall = IsBallVisible();
-        if (canSeeBall)
+        switch (forwardAxis)
         {
-            isSearching = false;  // Reset searching when ball is found
+            case 1:
+                dirToGo = transform.forward * m_ForwardSpeed;
+                m_KickPower = 1f;
+                break;
+            case 2:
+                dirToGo = transform.forward * -m_ForwardSpeed;
+                break;
         }
-        Vector3 rotateDir = canSeeBall ? Vector3.zero : GetSearchRotation();
-        Vector3 dirToGo = CalculateMovementDirection(forwardAxis, rightAxis);
+
+        switch (rightAxis)
+        {
+            case 1:
+                dirToGo = transform.right * m_LateralSpeed;
+                break;
+            case 2:
+                dirToGo = transform.right * -m_LateralSpeed;
+                break;
+        }
+
+        switch (rotateAxis)
+        {
+            case 1:
+                rotateDir = transform.up * -1f;
+                break;
+            case 2:
+                rotateDir = transform.up * 1f;
+                break;
+        }
+
+        switch (visionConeAxis)
+        {
+            case 1:
+                AdjustVisionCone(1);
+                break;
+            case 2:
+                AdjustVisionCone(-1);
+                break;
+            default:
+                AdjustVisionCone(0);
+                break;
+        }
 
         transform.Rotate(rotateDir, Time.deltaTime * 100f);
-        agentRb.AddForce(dirToGo * m_SoccerSettings.agentRunSpeed, ForceMode.VelocityChange);
-        
+        agentRb.AddForce(dirToGo * m_SoccerSettings.agentRunSpeed,
+            ForceMode.VelocityChange);
+    }
+    private void AdjustVisionCone(int direction)
+    {
+    // Update vision angle
+    currentVisionAngle += direction * visionRotationSpeed * Time.deltaTime;
+
+    // Apply rotation to vision cone object
+    if (visionConeTransform != null)
+    {
+        visionConeTransform.localRotation = Quaternion.Euler(0, currentVisionAngle, 0);
+    }
     }
 
     // New method to check if the ball is visible
@@ -401,10 +475,10 @@ public class AgentSoccer : Agent
         MoveAgent(actionBuffers.DiscreteActions);
     }
 
-    public override void Heuristic(in ActionBuffers actionsOut)
+     public override void Heuristic(in ActionBuffers actionsOut)
     {
         var discreteActionsOut = actionsOut.DiscreteActions;
-        //forward
+
         if (Input.GetKey(KeyCode.W))
         {
             discreteActionsOut[0] = 1;
@@ -413,7 +487,6 @@ public class AgentSoccer : Agent
         {
             discreteActionsOut[0] = 2;
         }
-        //rotate
         if (Input.GetKey(KeyCode.A))
         {
             discreteActionsOut[2] = 1;
@@ -422,7 +495,6 @@ public class AgentSoccer : Agent
         {
             discreteActionsOut[2] = 2;
         }
-        //right
         if (Input.GetKey(KeyCode.E))
         {
             discreteActionsOut[1] = 1;
@@ -430,6 +502,15 @@ public class AgentSoccer : Agent
         if (Input.GetKey(KeyCode.Q))
         {
             discreteActionsOut[1] = 2;
+        }
+
+        if (Input.GetKey(KeyCode.Z))
+        {
+            discreteActionsOut[3] = 1;
+        }
+        if (Input.GetKey(KeyCode.C))
+        {
+            discreteActionsOut[3] = 2;
         }
     }
     /// <summary>
@@ -536,62 +617,6 @@ public class AgentSoccer : Agent
                 turn4 = false;
             }
         }
-    }
-    private Vector3 GetSearchRotation()
-    {
-        isSearching = true;
-        float rotationAmount = 0f;
-        
-        if (timer >= 0f && timer < 0.3f)
-        {
-            rotationAmount = 90f;
-        }
-        else if (timer >= 0.3f && timer < 0.6f)
-        {
-            rotationAmount = -90f;
-        }
-        else if (timer >= 0.6f && timer < 0.9f)
-        {
-            rotationAmount = -90f;
-        }
-        else if (timer >= 0.9f && timer < 1.2f)
-        {
-            rotationAmount = 90f;
-        }
-        else
-        {
-            timer = 0f;
-        }
-        
-        timer += Time.deltaTime;
-        return Vector3.up * rotationAmount;
-    }
-
-    private Vector3 CalculateMovementDirection(int forwardAxis, int rightAxis)
-    {
-        var dirToGo = Vector3.zero;
-        m_KickPower = 0f;
-
-        if (forwardAxis == 1)
-        {
-            dirToGo = transform.forward * m_ForwardSpeed;
-            m_KickPower = 1f;
-        }
-        else if (forwardAxis == 2)
-        {
-            dirToGo = transform.forward * -m_ForwardSpeed;
-        }
-
-        if (rightAxis == 1)
-        {
-            dirToGo += transform.right * m_LateralSpeed;
-        }
-        else if (rightAxis == 2)
-        {
-            dirToGo += transform.right * -m_LateralSpeed;
-        }
-
-        return dirToGo;
     }
 
     public override void CollectObservations(VectorSensor sensor)
