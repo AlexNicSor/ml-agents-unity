@@ -2090,6 +2090,7 @@ Transform:
   - {fileID: 4683691907469924}
   - {fileID: 4222051823283070}
   - {fileID: 4671048899227928}
+  - {fileID: 5344535762648819265}
   m_Father: {fileID: 4444285537983296}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &33298283473714412
@@ -2290,6 +2291,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   ball: {fileID: 0}
+  showRotationDebug: 1
+  debugLineLength: 2
 --- !u!114 &114320493772006642
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2578,11 +2581,13 @@ MonoBehaviour:
   visionRange: 10
   visionAngle: 90
   visionRotationSpeed: 45
-  visionConeTransform: {fileID: 0}
+  visionConeTransform: {fileID: 5344535762648819265}
   visionMask:
     serializedVersion: 2
     m_Bits: 0
   ball: {fileID: 0}
+  showRotationDebug: 1
+  debugLineLength: 20
 --- !u!114 &114516244030127556
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4115,6 +4120,37 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &3794671806733799238
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5344535762648819265}
+  m_Layer: 0
+  m_Name: VisionCone
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5344535762648819265
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3794671806733799238}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4991109413118678}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4407673136905670519
 GameObject:
   m_ObjectHideFlags: 0
@@ -4500,6 +4536,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   ball: {fileID: 0}
+  showRotationDebug: 1
+  debugLineLength: 2
 --- !u!114 &1023485123796557062
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5047,6 +5085,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   ball: {fileID: 0}
+  showRotationDebug: 1
+  debugLineLength: 2
 --- !u!114 &2562571719799803906
 MonoBehaviour:
   m_ObjectHideFlags: 0

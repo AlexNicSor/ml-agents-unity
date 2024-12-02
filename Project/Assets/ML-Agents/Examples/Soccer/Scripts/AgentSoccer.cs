@@ -59,20 +59,23 @@ public class AgentSoccer : Agent
 
     [SerializeField]
     private LayerMask visionMask;
-
     
     EnvironmentParameters m_ResetParams;
 
     public GameObject ball; // Reference to the ball GameObject
-    private bool isSearching = false;
+    //private bool isSearching = false;
 
 
 
-    private float timer = 0f;
-    private bool turn1 = false;
-    private bool turn2 = false;
-    private bool turn3 = false;
-    private bool turn4 = false;
+    // private float timer = 0f;
+    // private bool turn1 = false;
+    // private bool turn2 = false;
+    // private bool turn3 = false;
+    // private bool turn4 = false;
+
+    [Header("Debug Visualization")]
+    public bool showRotationDebug = true;
+    public float debugLineLength = 2f;
 
     public override void Initialize()
     {
@@ -395,14 +398,17 @@ public class AgentSoccer : Agent
     }
     private void AdjustVisionCone(int direction)
     {
-    // Update vision angle
-    currentVisionAngle += direction * visionRotationSpeed * Time.deltaTime;
-
-    // Apply rotation to vision cone object
-    if (visionConeTransform != null)
-    {
-        visionConeTransform.localRotation = Quaternion.Euler(0, currentVisionAngle, 0);
-    }
+        Debug.Log($"Adjusting vision cone: {direction}");
+        
+        currentVisionAngle += direction * visionRotationSpeed * Time.deltaTime;
+        if (visionConeTransform != null)
+        {
+            visionConeTransform.localRotation = Quaternion.Euler(0, currentVisionAngle, 0);
+        }
+        else
+        {
+            Debug.LogWarning("Vision cone transform is null!");
+        }
     }
 
     // New method to check if the ball is visible
@@ -582,42 +588,42 @@ public class AgentSoccer : Agent
     }
 
 
-    void Update()
-    {
-        if (!isSearching)  
-        {
-            timer += Time.deltaTime;
+    // void Update()
+    // {
+    //     if (!isSearching)  
+    //     {
+    //         timer += Time.deltaTime;
 
-            if (timer >= 3f && timer < 3.3f && !turn1)  
-            {
-                transform.Rotate(Vector3.up * 90f); 
-                turn1 = true;
-            }
-            else if (timer >= 3.3f && timer < 3.6f && !turn2)  
-            {
-                transform.Rotate(Vector3.up * -90f);  
-                turn2 = true;
-            }
-            else if (timer >= 3.6f && timer < 3.9f && !turn3)  
-            {
-                transform.Rotate(Vector3.up * -90f);  
-                turn3 = true;
-            }
-            else if (timer >= 3.9f && timer < 4.2f && !turn4)  
-            {
-                transform.Rotate(Vector3.up * 90f);  
-                turn4 = true;
-            }
-            else if (timer >= 4.2f)  
-            {
-                timer = 0f;
-                turn1 = false;
-                turn2 = false;
-                turn3 = false;
-                turn4 = false;
-            }
-        }
-    }
+    //         if (timer >= 3f && timer < 3.3f && !turn1)  
+    //         {
+    //             transform.Rotate(Vector3.up * 90f); 
+    //             turn1 = true;
+    //         }
+    //         else if (timer >= 3.3f && timer < 3.6f && !turn2)  
+    //         {
+    //             transform.Rotate(Vector3.up * -90f);  
+    //             turn2 = true;
+    //         }
+    //         else if (timer >= 3.6f && timer < 3.9f && !turn3)  
+    //         {
+    //             transform.Rotate(Vector3.up * -90f);  
+    //             turn3 = true;
+    //         }
+    //         else if (timer >= 3.9f && timer < 4.2f && !turn4)  
+    //         {
+    //             transform.Rotate(Vector3.up * 90f);  
+    //             turn4 = true;
+    //         }
+    //         else if (timer >= 4.2f)  
+    //         {
+    //             timer = 0f;
+    //             turn1 = false;
+    //             turn2 = false;
+    //             turn3 = false;
+    //             turn4 = false;
+    //         }
+    //     }
+    // }
 
     public override void CollectObservations(VectorSensor sensor)
     {
@@ -631,11 +637,25 @@ public class AgentSoccer : Agent
 
         foreach (GameObject nearbyAgent in nearbyAgents)
         {
+            if (IsBallVisible())
+            {
+            AddReward(0.1f);  // Reward for seeing the ball
+            }
+            // float angleToBall = Vector3.Angle(visionConeTransform.forward, ball.transform.position - transform.position);
+            // if (angleToBall < visionAngle / 2)
+            // {
+            // AddReward(0.05f);  // Reward for keeping the ball centered
+            // }
+               if (!IsBallVisible())
+            {
+            AddReward(-0.1f);  // Penalty for losing sight of the ball
+            }
 
             if (nearbyAgent.CompareTag("ball")) // reward for being near the ball
             {
                 AddReward(0.2f);
             }
+            
             // if ball moves towards opponent's goal, give a small reward
             // otherwise, give a small penalty
             if (nearbyAgent.gameObject.CompareTag("ball"))
@@ -670,6 +690,53 @@ public class AgentSoccer : Agent
             sensor.AddObservation(0);
             sensor.AddObservation(Vector3.zero);
             countObservations++;
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (!showRotationDebug) return;
+
+        // Body direction (world space) - Blue
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine(transform.position, transform.position + transform.forward * debugLineLength);
+
+        // Vision direction (combined rotation) - Red
+        Gizmos.color = Color.red;
+        if (visionConeTransform != null)
+        {
+            Gizmos.DrawLine(transform.position, 
+                transform.position + visionConeTransform.forward * debugLineLength);
+        }
+
+        // Draw an arc to show the vision angle
+        Gizmos.color = Color.yellow;
+        DrawVisionArc();
+    }
+
+    private void DrawVisionArc()
+    {
+        if (visionConeTransform == null) return;
+
+        float radius = debugLineLength;
+        int segments = 20;
+        float halfAngle = visionAngle / 2;
+        
+        Vector3 forward = visionConeTransform.forward;
+        Vector3 right = visionConeTransform.right;
+        
+        for (int i = 0; i < segments; i++)
+        {
+            float angle1 = -halfAngle + (i * visionAngle / segments);
+            float angle2 = -halfAngle + ((i + 1) * visionAngle / segments);
+            
+            Vector3 direction1 = Quaternion.AngleAxis(angle1, Vector3.up) * forward;
+            Vector3 direction2 = Quaternion.AngleAxis(angle2, Vector3.up) * forward;
+            
+            Gizmos.DrawLine(
+                transform.position + direction1 * radius,
+                transform.position + direction2 * radius
+            );
         }
     }
 
