@@ -6,7 +6,7 @@ public class SoundEmitter : MonoBehaviour
     public float maxVolume = 1.0f;
 
     [Tooltip("The maximum range of the sound.")]
-    public float maxRange = 100.0f;
+    public float maxRange = 20.0f;
 
     public Vector3 GetSound(Vector3 listenerPosition)
     {
@@ -26,7 +26,8 @@ public class SoundEmitter : MonoBehaviour
     private void OnDrawGizmos()
     {
         // Visualize the emitter's range for debugging
-        Gizmos.color = new Color(1, 0, 0, 0.2f); // Transparent red
+        //Gizmos.color = new Color(1, 0, 0, 0.2f); // Transparent red
+        Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, maxRange);
     }
 }
