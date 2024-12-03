@@ -77,6 +77,8 @@ public class AgentSoccer : Agent
     public bool showRotationDebug = true;
     public float debugLineLength = 2f;
 
+    private RayPerceptionSensorComponent3D rayPerceptionSensor;
+
     public override void Initialize()
     {
         envController = GetComponentInParent<SoccerEnvController>();
@@ -134,6 +136,21 @@ public class AgentSoccer : Agent
     currentVisionAngle = transform.eulerAngles.y;
 
         m_ResetParams = Academy.Instance.EnvironmentParameters;
+
+        // Update how we find the ray perception sensor
+        if (visionConeTransform != null)
+        {
+            rayPerceptionSensor = visionConeTransform.GetComponent<RayPerceptionSensorComponent3D>();
+            if (rayPerceptionSensor == null)
+            {
+                rayPerceptionSensor = visionConeTransform.GetComponentInChildren<RayPerceptionSensorComponent3D>();
+            }
+        }
+
+        if (rayPerceptionSensor == null)
+        {
+            Debug.LogError("RayPerceptionSensorComponent3D not found on vision cone or its children!");
+        }
     }
 
     private void AdaptRoleBasedOnBallPosition()
@@ -398,16 +415,12 @@ public class AgentSoccer : Agent
     }
     private void AdjustVisionCone(int direction)
     {
-        Debug.Log($"Adjusting vision cone: {direction}");
-        
         currentVisionAngle += direction * visionRotationSpeed * Time.deltaTime;
+        
+        // Update vision cone visualization
         if (visionConeTransform != null)
         {
             visionConeTransform.localRotation = Quaternion.Euler(0, currentVisionAngle, 0);
-        }
-        else
-        {
-            Debug.LogWarning("Vision cone transform is null!");
         }
     }
 
@@ -484,40 +497,58 @@ public class AgentSoccer : Agent
      public override void Heuristic(in ActionBuffers actionsOut)
     {
         var discreteActionsOut = actionsOut.DiscreteActions;
+        
+        // Initialize all actions to 0 (no action)
+        for (int i = 0; i < discreteActionsOut.Length; i++)
+        {
+            discreteActionsOut[i] = 0;
+        }
 
+        // Movement Controls
         if (Input.GetKey(KeyCode.W))
         {
-            discreteActionsOut[0] = 1;
+            discreteActionsOut[0] = 1;  // Forward
+            Debug.Log("Forward");
         }
         if (Input.GetKey(KeyCode.S))
         {
-            discreteActionsOut[0] = 2;
+            discreteActionsOut[0] = 2;  // Backward
+            Debug.Log("Backward");
         }
         if (Input.GetKey(KeyCode.A))
         {
-            discreteActionsOut[2] = 1;
+            discreteActionsOut[2] = 1;  // Rotate Left
+            Debug.Log("Rotate Left");
         }
         if (Input.GetKey(KeyCode.D))
         {
-            discreteActionsOut[2] = 2;
+            discreteActionsOut[2] = 2;  // Rotate Right
+            Debug.Log("Rotate Right");
         }
         if (Input.GetKey(KeyCode.E))
         {
-            discreteActionsOut[1] = 1;
+            discreteActionsOut[1] = 1;  // Strafe Right
+            Debug.Log("Strafe Right");
         }
         if (Input.GetKey(KeyCode.Q))
         {
-            discreteActionsOut[1] = 2;
+            discreteActionsOut[1] = 2;  // Strafe Left
+            Debug.Log("Strafe Left");
         }
 
+        // Vision Controls
         if (Input.GetKey(KeyCode.Z))
         {
-            discreteActionsOut[3] = 1;
+            discreteActionsOut[3] = 1;  // Vision Left
+            Debug.Log("Vision Left");
         }
         if (Input.GetKey(KeyCode.C))
         {
-            discreteActionsOut[3] = 2;
+            discreteActionsOut[3] = 2;  // Vision Right
+            Debug.Log("Vision Right");
         }
+
+     
     }
     /// <summary>
     /// Used to provide a "kick" to the ball.
