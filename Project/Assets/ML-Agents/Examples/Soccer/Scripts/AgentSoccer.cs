@@ -365,27 +365,30 @@ public class AgentSoccer : Agent
         var rotateAxis = act[2];
         var visionConeAxis = act[3];
 
+        // Apply team-specific direction for forward/backward movement
         switch (forwardAxis)
         {
             case 1:
-                dirToGo = transform.forward * m_ForwardSpeed;
+                dirToGo = transform.forward * m_ForwardSpeed * rotSign; // Use rotSign to flip direction
                 m_KickPower = 1f;
                 break;
             case 2:
-                dirToGo = transform.forward * -m_ForwardSpeed;
+                dirToGo = transform.forward * -m_ForwardSpeed * rotSign; // Use rotSign to flip direction
                 break;
         }
 
+        // Right/Left movement might also need to be flipped depending on your field layout
         switch (rightAxis)
         {
             case 1:
-                dirToGo = transform.right * m_LateralSpeed;
+                dirToGo = transform.right * m_LateralSpeed * rotSign; // Use rotSign to flip direction
                 break;
             case 2:
-                dirToGo = transform.right * -m_LateralSpeed;
+                dirToGo = transform.right * -m_LateralSpeed * rotSign; // Use rotSign to flip direction
                 break;
         }
 
+      
         switch (rotateAxis)
         {
             case 1:
@@ -396,6 +399,7 @@ public class AgentSoccer : Agent
                 break;
         }
 
+      
         switch (visionConeAxis)
         {
             case 1:
