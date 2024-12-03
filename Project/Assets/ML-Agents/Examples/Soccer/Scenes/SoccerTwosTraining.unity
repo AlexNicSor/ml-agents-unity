@@ -210,7 +210,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxVolume: 1
-  maxRange: 20
+  maxRange: 50
 --- !u!1001 &296100289
 PrefabInstance:
   m_ObjectHideFlags: 0

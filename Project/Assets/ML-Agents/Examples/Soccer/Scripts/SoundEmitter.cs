@@ -20,15 +20,12 @@ public class SoundEmitter : MonoBehaviour
         Vector3 sound = direction.normalized * intensity;
 
         Debug.Log($"SoundEmitter {name}: Sound = {sound}, Intensity = {intensity}, Distance = {distance}");
-        return direction.normalized * intensity;
+        return sound;
     }
 
     private void OnDrawGizmos()
     {
-        // Visualize the emitter's range for debugging
-        //Gizmos.color = new Color(1, 0, 0, 0.2f); // Transparent red
-        Gizmos.color = Color.yellow;
+        Gizmos.color = new Color(1, 0, 0, 0.2f); 
         Gizmos.DrawWireSphere(transform.position, maxRange);
     }
 }
-

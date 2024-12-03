@@ -17,15 +17,16 @@ public class SoundSensor : SensorComponent
 
     private Vector3 soundDirection = Vector3.zero;
 
+    float intensity = 0f;
+    float distance = 0f;
+
     public override ISensor[] CreateSensors()
     {
-        // Create a VectorSensor with 3 dimensions for X, Y, Z sound direction
         return new ISensor[] { new VectorSensor(3, $"{name}_SoundSensor") };
     }
 
     private void Update()
     {
-        // Regularly update sound detection logic
         UpdateSoundDetection();
     }
 
@@ -40,12 +41,17 @@ public class SoundSensor : SensorComponent
 
             foreach (var emitter in emitters)
             {
-                float distance = Vector3.Distance(transform.position, emitter.transform.position);
+                SoundEmitter soundEmitter = emitter.GetComponent<SoundEmitter>();
+                if (soundEmitter != null)
+                {
+                    Vector3 sound = soundEmitter.GetSound(transform.position); 
+                     intensity = sound.magnitude;
+                }else {
+                     intensity = 1.0f / (1.0f + distance * distance);
+                }
 
-                // Calculate sound intensity
-                float intensity = 1.0f / (1.0f + distance * distance);
+                 distance = Vector3.Distance(transform.position, emitter.transform.position);
 
-                // Check for Rigidbody to compute relative velocity
                 Rigidbody emitterRigidbody = emitter.GetComponent<Rigidbody>();
                 Vector3 relativeVelocity = Vector3.zero;
                 if (emitterRigidbody != null)

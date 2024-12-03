@@ -2,7 +2,7 @@ using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
-using Unity.MLAgents.Sensors;  // For VectorSensor
+using Unity.MLAgents.Sensors;
 public enum Team
 {
     Blue = 0,
@@ -53,13 +53,7 @@ public class AgentSoccer : Agent
 
     public override void Initialize()
     {
-
-       // Initialize the SoundSensor
         soundSensor = GetComponent<SoundSensor>();
-        if (soundSensor == null)
-        {
-            Debug.LogError("SoundSensor component missing! Ensure it is attached to the agent GameObject.");
-        }
         
         SoccerEnvController envController = GetComponentInParent<SoccerEnvController>();
         if (envController != null)
@@ -157,19 +151,18 @@ public class AgentSoccer : Agent
 
     {
         MoveAgent(actionBuffers.DiscreteActions);
-
         MoveAgent(actionBuffers.DiscreteActions);
 
-        // Reward for movement toward the sound source
         if (soundSensor != null)
         {
             Vector3 movementDirection = agentRb.velocity.normalized;
             float alignmentWithSound = Vector3.Dot(movementDirection, soundSensor.SoundDirection);
 
-            // Reward if the agent is moving toward the ball
-            if (soundSensor.SoundIntensity > 0) // Only reward if the ball is audible
+            if (soundSensor.SoundIntensity > 0) 
             {
-                AddReward(0.1f); // Scale reward appropriately
+                AddReward(0.1f * soundSensor.SoundIntensity); 
+                Debug.Log($"Sound intensity: {soundSensor.SoundIntensity}");
+
             }
         }
 
