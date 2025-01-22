@@ -163,16 +163,26 @@ To use the cloned repository, after all other installation steps are completed:
 9. Press play, located at the top middle part of your screen.
 
 # Experiments
-In order to see our result or recreate our experiments follow these steps:
-1. To see our result nevigate to the *final_data_and_results* folder on the main branch.
-2. To recreate our training:
-- Setup the environment as shown above (Installation Guide)
-- For better organization switch to desired experiment branch (batch_size, epoch, learning_rate, beta)
-- Build the project and save the executable.
-- Open a terminal that is inside the python virtual environment
-- Navigate to ml-agents-unity\config\poca
-- Run the command ```mlagents-learn **select_here_the_test_file_you_want**.yaml --env="select_path_to_executable-UnityEnvironment.exe" --run-id="name" --no-graphics ```
+To view the results of our experiments or recreate them, follow the steps below:
+## Viewing Results
+- Navigate to the *final_data_and_results* folder in the main branch to find all final results.
+## Recreating Training
+1. Set Up the Environment:
+Follow the steps outlined in the Installation Guide to set up the environment.
+2. Select the Experiment Branch:
+For better organization, switch to the branch corresponding to the parameter you want to experiment with (e.g., batch_size, epoch, learning_rate, or beta).
+3. Build the Unity Project:
+Build the Unity project and save the executable in a desired location.
+4. Activate the Python Virtual Environment:
+Open a terminal and activate the Python virtual environment you set up earlier.
+5. Navigate to the Configuration Files:
+Change the directory to ml-agents-unity\config\poca.
 
+6.Run the Training Command:
+Execute the following command:
+```
+mlagents-learn <test-file>.yaml --env="<path-to-executable>/UnityEnvironment.exe" --run-id="<run-name>" --no-graphics
+```
 
 
 
