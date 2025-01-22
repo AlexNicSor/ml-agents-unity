@@ -1,0 +1,10 @@
+Average CPU USAGE:
+epoch1: 14.79%
+epoch3: 15.63%
+epoch6: 16.61%
+
+
+Average Memory USAGE:
+epoch1: 47.31%
+epoch3: 47.20%
+epoch6: 49.98%

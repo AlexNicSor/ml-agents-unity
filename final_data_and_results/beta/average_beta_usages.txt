@@ -1,0 +1,13 @@
+Beta 0.0005:
+Average CPU Usage: 22.40%
+Average Memory Usage: 57.60%
+
+
+Beta 0.005 (base):
+Average CPU Usage: 24.17%
+Average Memory Usage: 45.83%
+
+
+Beta 0.05:
+Average CPU Usage: 31.94%
+Average Memory Usage: 59.23%

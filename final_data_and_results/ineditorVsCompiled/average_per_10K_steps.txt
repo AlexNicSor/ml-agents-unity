@@ -1,0 +1,2 @@
+Average time per 10k steps (Editor): 126.37 seconds
+Average time per 10k steps (Compiled): 43.67 seconds

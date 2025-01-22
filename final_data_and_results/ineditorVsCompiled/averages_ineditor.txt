@@ -1,0 +1,7 @@
+litle bit more than 200k and with crashes:
+Average CPU Usage: 14.01%
+Average Memory Usage: 67.57%
+
+200k steps:
+Average CPU Usage: 15.80%
+Average Memory Usage: 79.33%

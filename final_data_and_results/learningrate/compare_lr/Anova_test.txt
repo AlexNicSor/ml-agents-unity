@@ -1,0 +1,6 @@
+ANOVA test for CPU Usage:
+F-statistic: 486.65, p-value: 0.0000
+ANOVA test for Memory Usage:
+F-statistic: 30263.04, p-value: 0.0000
+There is a significant difference in CPU usage between the learning rates.
+There is a significant difference in Memory usage between the learning rates.

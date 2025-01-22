@@ -1,0 +1,6 @@
+ANOVA test for CPU Usage:
+F-statistic: 5.99, p-value: 0.0031
+ANOVA test for Memory Usage:
+F-statistic: 8.87, p-value: 0.0002
+There is a significant difference in CPU usage between the epochs.
+There is a significant difference in Memory usage between the epochs.

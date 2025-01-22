@@ -1,0 +1,6 @@
+ANOVA test for CPU Usage:
+F-statistic: 207.92, p-value: 0.0000
+ANOVA test for Memory Usage:
+F-statistic: 593.76, p-value: 0.0000
+There is a significant difference in CPU usage between the batch sizes.
+There is a significant difference in Memory usage between the batch sizes.

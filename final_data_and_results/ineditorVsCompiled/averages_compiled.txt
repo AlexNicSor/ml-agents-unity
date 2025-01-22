@@ -1,0 +1,2 @@
+Average CPU Usage: 9.74%
+Average Memory Usage: 18.13%
