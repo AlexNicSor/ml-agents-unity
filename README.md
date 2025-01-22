@@ -95,11 +95,53 @@ Our future plans for this project are split into two phases and include the foll
 * Parameter Adjustment for Algorithm Optimization.
 * Code Addition for New Input Type in Soccer Twos
 * Peripheral Vision and Advanced Input Simulation
+
+* * To enhance our ML-Agent’s perception and to create a
+more realistic environment, we added custom sensors, in-
+cluding proximity detectors and a decoupled vision system.
+Proximity sensors enable the agent to sense nearby objects,
+improving spatial awareness and collision avoidance. The
+decoupled vision system allows a more realistic movement
+pattern, the agent being able to move while looking in a
+different direction, enhancing its ability to analyze and
+respond to complex scenarios. Adding a reward system to our ML-Agent was a crucial
+step in designing and training intelligent agents to learn and
+achieve the desired result. In the context of reinforcement
+learning, the reward system serves as the agent’s feedback mechanism, guiding its behavior by providing positive or
+negative rewards based on it’s actions. By clearly defining
+reward signals aligned with desired outcomes, we encourage
+the agent to explore and exploit strategies that maximize
+cumulative rewards. In our implementation, we introduced
+several rewards that were designed to promote certain be-
+havior and strategies for our agents
+
 - # Phase 3 Tasks
 * Establish Baseline Performance of Algorithm in a selected envi-
 ronment(Chosen Game)
 * Experiment with Parameter Tuning
 * Experiment with different sensor/input types
+
+* In our approach to optimizing and training our ML-Agent’s
+to best perform, we experimented with changing 4 different
+parameters in the .yaml file used for training. These
+include tuning the Beta, the Learning Rate, number of
+Epochs and Batch Size respectively. Each parameter was
+changed twice, then the model trained to 10 million steps
+with this change. This allowed us to get large enough
+training data in order to then evaluate the specific version’s
+performance. Therefore we had a total of 8 independently
+modified and trained versions all with only one parameter
+changed. Each one of the aforementioned can be found in
+the yaml file of the project.
+
+| **Parameter**    | **Batch Size** | **Epochs** | **Learning Rate** | **Beta**  |
+|-------------------|----------------|------------|--------------------|-----------|
+| **Original**      | 2048           | 3          | 0.0003             | 0.005     |
+| **First change**  | 1024           | 1          | 0.03               | 0.05      |
+| **Second change** | 4096           | 6          | 0.003              | 0.0005    |
+
+
+
 
 # Risk Analysis
 1. **Lack of Experience**: Some team members are new to Unity and Ml-Agents, this will pose a challenge
