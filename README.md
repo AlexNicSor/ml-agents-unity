@@ -19,8 +19,9 @@ document our results.
    - [Phase 3 Tasks](#phase-3-tasks)
 7. [Risk Analysis](#risk-analysis)
 8. [Usage Instructions](#usage-instructions)
-9. [References and Resources](#references-and-resources)
-10. [Project Contributors](#Contributors)
+9. [Experiments](#experiments)
+10. [References and Resources](#references-and-resources)
+11. [Project Contributors](#Contributors)
 
 # Introduction
 This project is about putting **Deep Reinforcement Learning (DRL)** to work in Unity.
@@ -160,6 +161,20 @@ To use the cloned repository, after all other installation steps are completed:
 7. Select the example game that you want to run.
 8. Select the Scences folder and then the scene you want to run.
 9. Press play, located at the top middle part of your screen.
+
+# Experiments
+In order to see our result or recreate our experiments follow these steps:
+1. To see our result nevigate to the *final_data_and_results* folder on the main branch.
+2. To recreate our training:
+- Setup the environment as shown above (Installation Guide)
+- For better organization switch to desired experiment branch (batch_size, epoch, learning_rate, beta)
+- Build the project and save the executable.
+- Open a terminal that is inside the python virtual environment
+- Navigate to ml-agents-unity\config\poca
+- Run the command ```mlagents-learn **select_here_the_test_file_you_want**.yaml --env="select_path_to_executable-UnityEnvironment.exe" --run-id="name" --no-graphics ```
+
+
+
 
 # References and Resources 
 1. Unity-Technologies. (n.d.-b). GitHub - Unity-Technologies/ml-agents: The Unity Machine Learning Agents Toolkit (ML-Agents) is an open-source project that enables games and simulations to serve as environments for training intelligent agents using deep reinforcement learning and imitation learning. GitHub. https://github.com/Unity-Technologies/ml-agents
